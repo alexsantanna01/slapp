@@ -1,0 +1,20 @@
+package com.slapp;
+
+import com.slapp.config.AsyncSyncConfiguration;
+import com.slapp.config.EmbeddedSQL;
+import com.slapp.config.JacksonConfiguration;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.boot.test.context.SpringBootTest;
+
+/**
+ * Base composite annotation for integration tests.
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@SpringBootTest(classes = { SlappApp.class, JacksonConfiguration.class, AsyncSyncConfiguration.class })
+@EmbeddedSQL
+public @interface IntegrationTest {
+}
