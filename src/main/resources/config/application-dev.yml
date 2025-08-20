@@ -35,7 +35,7 @@ spring:
       enabled: false # DESABILITA DOCKER COMPOSE
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/slapp
+    url: jdbc:postgresql://localhost:5432/slapp_git
     username: postgres
     password: postgres
     hikari:
