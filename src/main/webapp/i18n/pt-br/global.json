@@ -7,7 +7,17 @@
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Entidades",
-        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
+        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
+        "userProfile": "User Profile",
+        "studio": "Studio",
+        "room": "Room",
+        "roomImage": "Room Image",
+        "equipment": "Equipment",
+        "reservation": "Reservation",
+        "review": "Review",
+        "specialPrice": "Special Price",
+        "availability": "Availability",
+        "cancellationPolicy": "Cancellation Policy"
       },
       "account": {
         "main": "Conta",

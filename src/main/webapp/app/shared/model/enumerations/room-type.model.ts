@@ -1,0 +1,11 @@
+export enum RoomType {
+  RECORDING = 'RECORDING',
+
+  REHEARSAL = 'REHEARSAL',
+
+  LIVE = 'LIVE',
+
+  MIXING = 'MIXING',
+
+  MASTERING = 'MASTERING',
+}

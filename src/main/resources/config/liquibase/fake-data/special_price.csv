@@ -1,0 +1,11 @@
+id;day_of_week;start_time;end_time;price;description;active;room_id
+1;SATURDAY;21:33:00;01:25:00;12701.48;without except;true;1
+2;SUNDAY;20:36:00;07:33:00;15676.35;vanish;false;2
+3;SATURDAY;02:42:00;17:55:00;11449.09;however;true;3
+4;MONDAY;11:41:00;21:46:00;22.71;hm;true;4
+5;MONDAY;05:38:00;01:44:00;11568.26;standard slip;false;5
+6;THURSDAY;02:36:00;05:25:00;31268.99;phooey noteworthy;true;6
+7;MONDAY;12:06:00;06:37:00;21986.4;among;false;7
+8;FRIDAY;13:43:00;11:15:00;2176.24;boo;false;8
+9;THURSDAY;20:48:00;09:58:00;15353.97;till;true;9
+10;THURSDAY;18:24:00;11:14:00;27831.02;than legging seemingly;false;10

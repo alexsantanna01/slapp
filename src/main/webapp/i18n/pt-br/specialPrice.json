@@ -1,0 +1,30 @@
+{
+  "slappApp": {
+    "specialPrice": {
+      "home": {
+        "title": "Special Prices",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Special Price",
+        "createOrEditLabel": "Criar ou editar Special Price",
+        "notFound": "Nenhum Special Price encontrado"
+      },
+      "created": "Um novo Special Price foi criado com o identificador {{ param }}",
+      "updated": "Um Special Price foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Special Price foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Special Price {{ id }}?"
+      },
+      "detail": {
+        "title": "Special Price"
+      },
+      "id": "ID",
+      "dayOfWeek": "Day Of Week",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "price": "Price",
+      "description": "Description",
+      "active": "Active",
+      "room": "Room"
+    }
+  }
+}

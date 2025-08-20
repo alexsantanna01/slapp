@@ -1,0 +1,277 @@
+/**
+ * SLAPP - Sistema de Locação e Agendamento de Práticas Profissionais
+ * JDL para JHipster
+ */
+
+// ============================================================================
+// ENTIDADES
+// ============================================================================
+
+/**
+ * Perfil estendido do usuário
+ */
+entity UserProfile {
+    phone String maxlength(20)
+    profileImage String maxlength(500)
+    userType UserType required
+    createdAt Instant
+    updatedAt Instant
+}
+
+/**
+ * Estúdio musical
+ */
+entity Studio {
+    name String required maxlength(100)
+    description TextBlob
+    address String required maxlength(200)
+    city String required maxlength(50)
+    state String required maxlength(50)
+    zipCode String maxlength(10)
+    latitude Double
+    longitude Double
+    phone String maxlength(20)
+    email String maxlength(100)
+    website String maxlength(200)
+    image String maxlength(500)
+    active Boolean required
+    createdAt Instant
+    updatedAt Instant
+}
+
+/**
+ * Sala de estúdio
+ */
+entity Room {
+    name String required maxlength(100)
+    description TextBlob
+    hourlyRate BigDecimal required min(0)
+    capacity Integer min(1)
+    soundproofed Boolean
+    airConditioning Boolean
+    roomType RoomType required
+    active Boolean required
+    createdAt Instant
+    updatedAt Instant
+}
+
+/**
+ * Imagens das salas
+ */
+entity RoomImage {
+    url String required maxlength(500)
+    altText String maxlength(100)
+    displayOrder Integer
+    active Boolean required
+}
+
+/**
+ * Equipamentos disponíveis nas salas
+ */
+entity Equipment {
+    name String required maxlength(100)
+    brand String maxlength(50)
+    model String maxlength(50)
+    description TextBlob
+    available Boolean required
+    equipmentType EquipmentType required
+    createdAt Instant
+    updatedAt Instant
+}
+
+/**
+ * Reservas de salas
+ */
+entity Reservation {
+    startDateTime Instant required
+    endDateTime Instant required
+    totalPrice BigDecimal required min(0)
+    status ReservationStatus required
+    notes TextBlob
+    createdAt Instant
+    updatedAt Instant
+    cancelledAt Instant
+    cancelReason String maxlength(500)
+}
+
+/**
+ * Avaliações dos estúdios
+ */
+entity Review {
+    rating Integer required min(1) max(5)
+    comment TextBlob
+    createdAt Instant
+    updatedAt Instant
+}
+
+/**
+ * Preços especiais por horário ou dia da semana
+ */
+entity SpecialPrice {
+    dayOfWeek DayOfWeek
+    startTime LocalTime
+    endTime LocalTime
+    price BigDecimal required min(0)
+    description String maxlength(200)
+    active Boolean required
+}
+
+/**
+ * Disponibilidade especial (bloqueios ou liberações)
+ */
+entity Availability {
+    startDateTime Instant required
+    endDateTime Instant required
+    available Boolean required
+    reason String maxlength(200)
+    createdAt Instant
+}
+
+/**
+ * Políticas de cancelamento
+ */
+entity CancellationPolicy {
+    name String required maxlength(100)
+    description TextBlob
+    hoursBeforeEvent Integer required min(0)
+    refundPercentage Integer required min(0) max(100)
+    active Boolean required
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserType {
+    CUSTOMER,
+    STUDIO_OWNER,
+    ADMIN
+}
+
+enum RoomType {
+    RECORDING,
+    REHEARSAL,
+    LIVE,
+    MIXING,
+    MASTERING
+}
+
+enum EquipmentType {
+    MICROPHONE,
+    AMPLIFIER,
+    DRUM_KIT,
+    KEYBOARD,
+    GUITAR,
+    BASS,
+    MIXER,
+    MONITOR,
+    HEADPHONE,
+    CABLE,
+    STAND,
+    INTERFACE,
+    SOFTWARE,
+    OTHER
+}
+
+enum ReservationStatus {
+    PENDING,
+    CONFIRMED,
+    IN_PROGRESS,
+    COMPLETED,
+    CANCELLED,
+    NO_SHOW
+}
+
+enum DayOfWeek {
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY,
+    SUNDAY
+}
+
+// ============================================================================
+// RELACIONAMENTOS
+// ============================================================================
+
+// UserProfile
+relationship OneToOne {
+    UserProfile{user required} to User with builtInEntity
+}
+
+// Studio
+relationship ManyToOne {
+    Studio{owner required} to UserProfile
+    Studio{cancellationPolicy} to CancellationPolicy
+}
+
+// Room
+relationship ManyToOne {
+    Room{studio required} to Studio
+}
+
+// RoomImage
+relationship ManyToOne {
+    RoomImage{room required} to Room
+}
+
+// Equipment
+relationship ManyToOne {
+    Equipment{room required} to Room
+}
+
+// SpecialPrice
+relationship ManyToOne {
+    SpecialPrice{room required} to Room
+}
+
+// Availability
+relationship ManyToOne {
+    Availability{room required} to Room
+}
+
+// Reservation
+relationship ManyToOne {
+    Reservation{customer required} to UserProfile
+    Reservation{room required} to Room
+}
+
+// Review
+relationship ManyToOne {
+    Review{customer required} to UserProfile
+    Review{studio required} to Studio
+    Review{reservation} to Reservation
+}
+
+// ============================================================================
+// CONFIGURAÇÕES
+// ============================================================================
+
+// Paginação
+paginate Studio, Room, Equipment, Reservation, Review with pagination
+
+// DTOs
+dto * with mapstruct
+
+// Serviços
+service * with serviceImpl
+
+// Filtros
+filter Studio, Room, Equipment, Reservation, Review
+
+// ============================================================================
+// CONFIGURAÇÕES DE MICROSERVIÇOS (OPCIONAL)
+// ============================================================================
+
+// Se quiser dividir em microserviços no futuro
+// microservice Studio, Room, Equipment, RoomImage with studioService
+// microservice Reservation, Review with bookingService
+// microservice UserProfile with userService
+
+// ============================================================================
+// DADOS INICIAIS (OPCIONAL)
+// ============================================================================
+
+// Você pode adicionar dados iniciais aqui se necessário

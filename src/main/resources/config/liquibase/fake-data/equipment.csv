@@ -1,0 +1,11 @@
+id;name;brand;model;description;available;equipment_type;created_at;updated_at;room_id
+1;whoever bench yesterday;about;bashfully patiently;../fake-data/blob/hipster.txt;false;DRUM_KIT;2025-08-19T21:44:07;2025-08-19T08:06:20;1
+2;shameless quixotic transom;neatly drab knitting;republican;../fake-data/blob/hipster.txt;true;HEADPHONE;2025-08-19T02:05:09;2025-08-19T12:03:20;2
+3;intensely lest repentant;blah;disadvantage instantly sans;../fake-data/blob/hipster.txt;true;MONITOR;2025-08-19T23:18:03;2025-08-19T08:45:12;3
+4;platter among;thoughtfully section;readmit;../fake-data/blob/hipster.txt;true;DRUM_KIT;2025-08-19T16:47:59;2025-08-19T18:15:07;4
+5;crazy curiously;pale rapidly;yahoo ha;../fake-data/blob/hipster.txt;false;BASS;2025-08-19T17:15:41;2025-08-19T11:09:52;5
+6;with recklessly;following;hm schedule;../fake-data/blob/hipster.txt;true;MIXER;2025-08-19T06:13:49;2025-08-19T10:44:34;6
+7;how until;hotfoot internationalize giant;till;../fake-data/blob/hipster.txt;false;AMPLIFIER;2025-08-19T17:42:34;2025-08-19T08:07:09;7
+8;whereas;breastplate incomplete huddle;fuss when drive;../fake-data/blob/hipster.txt;false;INTERFACE;2025-08-19T23:01:45;2025-08-20T00:39:38;8
+9;uh-huh;pish up fooey;shiny;../fake-data/blob/hipster.txt;false;SOFTWARE;2025-08-19T12:21:01;2025-08-19T21:31:26;9
+10;upbeat;hierarchy outdo gee;metabolise;../fake-data/blob/hipster.txt;false;INTERFACE;2025-08-19T19:47:53;2025-08-19T05:41:16;10

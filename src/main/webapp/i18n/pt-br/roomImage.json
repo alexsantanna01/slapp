@@ -1,0 +1,28 @@
+{
+  "slappApp": {
+    "roomImage": {
+      "home": {
+        "title": "Room Images",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Room Image",
+        "createOrEditLabel": "Criar ou editar Room Image",
+        "notFound": "Nenhum Room Image encontrado"
+      },
+      "created": "Um novo Room Image foi criado com o identificador {{ param }}",
+      "updated": "Um Room Image foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Room Image foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Room Image {{ id }}?"
+      },
+      "detail": {
+        "title": "Room Image"
+      },
+      "id": "ID",
+      "url": "Url",
+      "altText": "Alt Text",
+      "displayOrder": "Display Order",
+      "active": "Active",
+      "room": "Room"
+    }
+  }
+}

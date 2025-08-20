@@ -1,0 +1,10 @@
+{
+  "slappApp": {
+    "UserType": {
+      "null": "",
+      "CUSTOMER": "CUSTOMER",
+      "STUDIO_OWNER": "STUDIO_OWNER",
+      "ADMIN": "ADMIN"
+    }
+  }
+}

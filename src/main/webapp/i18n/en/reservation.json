@@ -1,0 +1,34 @@
+{
+  "slappApp": {
+    "reservation": {
+      "home": {
+        "title": "Reservations",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Reservation",
+        "createOrEditLabel": "Create or edit a Reservation",
+        "notFound": "No Reservations found"
+      },
+      "created": "A new Reservation is created with identifier {{ param }}",
+      "updated": "A Reservation is updated with identifier {{ param }}",
+      "deleted": "A Reservation is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Reservation {{ id }}?"
+      },
+      "detail": {
+        "title": "Reservation"
+      },
+      "id": "ID",
+      "startDateTime": "Start Date Time",
+      "endDateTime": "End Date Time",
+      "totalPrice": "Total Price",
+      "status": "Status",
+      "notes": "Notes",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "cancelledAt": "Cancelled At",
+      "cancelReason": "Cancel Reason",
+      "customer": "Customer",
+      "room": "Room"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "slappApp": {
+    "review": {
+      "home": {
+        "title": "Reviews",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Review",
+        "createOrEditLabel": "Criar ou editar Review",
+        "notFound": "Nenhum Review encontrado"
+      },
+      "created": "Um novo Review foi criado com o identificador {{ param }}",
+      "updated": "Um Review foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Review foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Review {{ id }}?"
+      },
+      "detail": {
+        "title": "Review"
+      },
+      "id": "ID",
+      "rating": "Rating",
+      "comment": "Comment",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "customer": "Customer",
+      "studio": "Studio",
+      "reservation": "Reservation"
+    }
+  }
+}

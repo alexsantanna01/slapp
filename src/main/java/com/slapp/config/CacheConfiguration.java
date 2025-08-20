@@ -50,6 +50,16 @@ public class CacheConfiguration {
             createCache(cm, com.slapp.domain.User.class.getName());
             createCache(cm, com.slapp.domain.Authority.class.getName());
             createCache(cm, com.slapp.domain.User.class.getName() + ".authorities");
+            createCache(cm, com.slapp.domain.UserProfile.class.getName());
+            createCache(cm, com.slapp.domain.Studio.class.getName());
+            createCache(cm, com.slapp.domain.Room.class.getName());
+            createCache(cm, com.slapp.domain.RoomImage.class.getName());
+            createCache(cm, com.slapp.domain.Equipment.class.getName());
+            createCache(cm, com.slapp.domain.Reservation.class.getName());
+            createCache(cm, com.slapp.domain.Review.class.getName());
+            createCache(cm, com.slapp.domain.SpecialPrice.class.getName());
+            createCache(cm, com.slapp.domain.Availability.class.getName());
+            createCache(cm, com.slapp.domain.CancellationPolicy.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

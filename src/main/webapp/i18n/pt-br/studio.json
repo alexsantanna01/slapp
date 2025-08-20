@@ -1,0 +1,40 @@
+{
+  "slappApp": {
+    "studio": {
+      "home": {
+        "title": "Studios",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Studio",
+        "createOrEditLabel": "Criar ou editar Studio",
+        "notFound": "Nenhum Studio encontrado"
+      },
+      "created": "Um novo Studio foi criado com o identificador {{ param }}",
+      "updated": "Um Studio foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Studio foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Studio {{ id }}?"
+      },
+      "detail": {
+        "title": "Studio"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "address": "Address",
+      "city": "City",
+      "state": "State",
+      "zipCode": "Zip Code",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "image": "Image",
+      "active": "Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "owner": "Owner",
+      "cancellationPolicy": "Cancellation Policy"
+    }
+  }
+}

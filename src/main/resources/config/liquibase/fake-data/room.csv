@@ -1,0 +1,11 @@
+id;name;description;hourly_rate;capacity;soundproofed;air_conditioning;room_type;active;created_at;updated_at;studio_id
+1;yowza council swing;../fake-data/blob/hipster.txt;14827.16;30511;false;false;RECORDING;true;2025-08-19T23:49:48;2025-08-19T07:16:58;1
+2;appreciate;../fake-data/blob/hipster.txt;30642.61;17350;false;false;REHEARSAL;false;2025-08-19T18:45:47;2025-08-19T05:54:40;2
+3;um;../fake-data/blob/hipster.txt;9725.71;18994;true;false;REHEARSAL;true;2025-08-19T20:42:42;2025-08-20T00:18:56;3
+4;sway afore after;../fake-data/blob/hipster.txt;17048.26;1991;true;true;REHEARSAL;false;2025-08-19T07:22:12;2025-08-19T02:40:16;4
+5;husk;../fake-data/blob/hipster.txt;24129.14;32631;true;true;MIXING;false;2025-08-19T16:59:35;2025-08-19T16:33:24;5
+6;orchid;../fake-data/blob/hipster.txt;32673.16;6369;false;true;REHEARSAL;false;2025-08-19T23:28:18;2025-08-19T20:09:42;6
+7;per an circumference;../fake-data/blob/hipster.txt;5275.94;14878;false;false;MIXING;true;2025-08-19T21:49:09;2025-08-19T23:19:12;7
+8;devastation;../fake-data/blob/hipster.txt;22182.14;18283;false;true;RECORDING;true;2025-08-19T05:37:11;2025-08-19T01:56:20;8
+9;tenant;../fake-data/blob/hipster.txt;21477.05;3582;true;false;LIVE;true;2025-08-19T12:57:57;2025-08-19T07:43:39;9
+10;yahoo;../fake-data/blob/hipster.txt;8209;706;true;false;MIXING;false;2025-08-19T23:37:54;2025-08-19T03:49:12;10

@@ -1,0 +1,28 @@
+{
+  "slappApp": {
+    "cancellationPolicy": {
+      "home": {
+        "title": "Cancellation Policies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Cancellation Policy",
+        "createOrEditLabel": "Create or edit a Cancellation Policy",
+        "notFound": "No Cancellation Policies found"
+      },
+      "created": "A new Cancellation Policy is created with identifier {{ param }}",
+      "updated": "A Cancellation Policy is updated with identifier {{ param }}",
+      "deleted": "A Cancellation Policy is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Cancellation Policy {{ id }}?"
+      },
+      "detail": {
+        "title": "Cancellation Policy"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "hoursBeforeEvent": "Hours Before Event",
+      "refundPercentage": "Refund Percentage",
+      "active": "Active"
+    }
+  }
+}

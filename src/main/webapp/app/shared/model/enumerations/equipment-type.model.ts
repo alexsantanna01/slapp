@@ -1,0 +1,29 @@
+export enum EquipmentType {
+  MICROPHONE = 'MICROPHONE',
+
+  AMPLIFIER = 'AMPLIFIER',
+
+  DRUM_KIT = 'DRUM_KIT',
+
+  KEYBOARD = 'KEYBOARD',
+
+  GUITAR = 'GUITAR',
+
+  BASS = 'BASS',
+
+  MIXER = 'MIXER',
+
+  MONITOR = 'MONITOR',
+
+  HEADPHONE = 'HEADPHONE',
+
+  CABLE = 'CABLE',
+
+  STAND = 'STAND',
+
+  INTERFACE = 'INTERFACE',
+
+  SOFTWARE = 'SOFTWARE',
+
+  OTHER = 'OTHER',
+}

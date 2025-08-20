@@ -1,0 +1,32 @@
+{
+  "slappApp": {
+    "equipment": {
+      "home": {
+        "title": "Equipment",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Equipment",
+        "createOrEditLabel": "Criar ou editar Equipment",
+        "notFound": "Nenhum Equipment encontrado"
+      },
+      "created": "Um novo Equipment foi criado com o identificador {{ param }}",
+      "updated": "Um Equipment foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Equipment foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Equipment {{ id }}?"
+      },
+      "detail": {
+        "title": "Equipment"
+      },
+      "id": "ID",
+      "name": "Name",
+      "brand": "Brand",
+      "model": "Model",
+      "description": "Description",
+      "available": "Available",
+      "equipmentType": "Equipment Type",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "room": "Room"
+    }
+  }
+}

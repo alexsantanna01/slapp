@@ -1,0 +1,29 @@
+{
+  "slappApp": {
+    "availability": {
+      "home": {
+        "title": "Availabilities",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Availability",
+        "createOrEditLabel": "Criar ou editar Availability",
+        "notFound": "Nenhum Availability encontrado"
+      },
+      "created": "Um novo Availability foi criado com o identificador {{ param }}",
+      "updated": "Um Availability foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Availability foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Availability {{ id }}?"
+      },
+      "detail": {
+        "title": "Availability"
+      },
+      "id": "ID",
+      "startDateTime": "Start Date Time",
+      "endDateTime": "End Date Time",
+      "available": "Available",
+      "reason": "Reason",
+      "createdAt": "Created At",
+      "room": "Room"
+    }
+  }
+}

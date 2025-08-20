@@ -1,0 +1,12 @@
+{
+  "slappApp": {
+    "RoomType": {
+      "null": "",
+      "RECORDING": "RECORDING",
+      "REHEARSAL": "REHEARSAL",
+      "LIVE": "LIVE",
+      "MIXING": "MIXING",
+      "MASTERING": "MASTERING"
+    }
+  }
+}
