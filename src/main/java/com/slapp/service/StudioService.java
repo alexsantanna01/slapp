@@ -1,7 +1,14 @@
 package com.slapp.service;
 
+import com.slapp.repository.projections.StudioDetailProjection;
+import com.slapp.repository.projections.StudioListProjection;
 import com.slapp.service.dto.StudioDTO;
+import com.slapp.service.dto.StudioFilterDTO;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service Interface for managing {@link com.slapp.domain.Studio}.
@@ -45,4 +52,8 @@ public interface StudioService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Page<StudioListProjection> getStudioRoomPagination(Pageable pageable, StudioFilterDTO filters);
+
+    Optional<StudioDetailProjection> getStudioDetail(Long id);
 }
