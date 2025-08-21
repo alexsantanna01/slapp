@@ -3,6 +3,11 @@
 # Auto detect text files and perform LF normalization
 # http://davidlaing.com/2012/09/19/customise-your-gitattributes-to-become-a-git-ninja/
 * text=auto eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
 
 # The above will handle all files NOT found below
 # These files are text and should be normalized (Convert crlf => lf)
