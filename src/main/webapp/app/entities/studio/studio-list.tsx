@@ -121,7 +121,7 @@ const StudioList = (props: StudioListProps) => {
                       <small className="price-unit text-muted d-block">por hora</small>
                     </div>
                     <Button color="primary" size="sm" onClick={() => handleStudioClick(studio?.id?.toString())} className="button-slapp">
-                      Reservar
+                      Detalhes
                     </Button>
                   </div>
                 </div>
