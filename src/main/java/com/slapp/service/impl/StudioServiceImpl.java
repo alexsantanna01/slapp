@@ -101,10 +101,6 @@ public class StudioServiceImpl implements StudioService {
      * Busca detalhes completos do Studio com Rooms e suas imagens
      * Implementação otimizada para evitar problema N+1
      */
-    /**
-     * Busca detalhes completos do Studio com Rooms e suas imagens
-     * Implementação otimizada para evitar problema N+1
-     */
     public Optional<StudioDetailProjection> getStudioDetail(Long id) {
         // 1. Busca os dados básicos do studio
         Optional<StudioBasicProjection> studioOpt = studioRepository.findStudioBasicDetailById(id);

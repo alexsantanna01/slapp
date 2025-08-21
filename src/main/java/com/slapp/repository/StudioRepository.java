@@ -49,7 +49,9 @@ public interface StudioRepository extends JpaRepository<Studio, Long>, JpaSpecif
         AND (:roomType IS NULL OR :roomType = '' OR
                 (:roomType = 'RECORDING' AND r.room_type = 'RECORDING') OR
                 (:roomType = 'REHEARSAL' AND r.room_type = 'REHEARSAL') OR
-                (:roomType = 'BOTH' AND r.room_type IN ('RECORDING', 'REHEARSAL')))
+                (:roomType = 'LIVE' AND r.room_type = 'LIVE') OR
+                (:roomType = 'MIXING' AND r.room_type = 'MIXING') OR
+                (:roomType = 'BOTH' AND r.room_type IN ('RECORDING', 'REHEARSAL', 'LIVE', 'MIXING')))
         AND (:minPrice IS NULL OR r.hourly_rate >= :minPrice)
         AND (:maxPrice IS NULL OR r.hourly_rate <= :maxPrice)
         """,
@@ -61,9 +63,7 @@ public interface StudioRepository extends JpaRepository<Studio, Long>, JpaSpecif
         AND (:name IS NULL OR :name = '' OR UPPER(s.name) LIKE UPPER(CONCAT('%', :name, '%')))
         AND (:city IS NULL OR :city = '' OR UPPER(s.city) LIKE UPPER(CONCAT('%', :city, '%')))
         AND (:roomType IS NULL OR :roomType = '' OR
-                (:roomType = 'RECORDING' AND r.room_type = 'RECORDING') OR
-                (:roomType = 'REHEARSAL' AND r.room_type = 'REHEARSAL') OR
-                (:roomType = 'BOTH' AND r.room_type IN ('RECORDING', 'REHEARSAL')))
+            (r.room_type = :roomType))
         AND (:minPrice IS NULL OR r.hourly_rate >= :minPrice)
         AND (:maxPrice IS NULL OR r.hourly_rate <= :maxPrice)
         """,
