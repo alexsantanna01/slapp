@@ -1,10 +1,81 @@
-/* ==========================================================================
-Main page styles
-========================================================================== */
-.hipster {
-  display: inline-block;
-  width: 100%;
-  height: 497px;
-  background: url('/content/images/jhipster_family_member_0.svg') no-repeat center top;
-  background-size: contain;
+// src/main/webapp/app/modules/home/home.scss
+.home-page {
+  background: var(--background-input);
+}
+
+.home {
+  .hero-section {
+    background: var(--background-input);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+    .hero-title {
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .hero-actions {
+      .btn {
+        margin: 0.5rem;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+
+  .search-section {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .view-toggle-section {
+    margin-bottom: 1rem;
+
+    h3 {
+      color: #343a40;
+      font-weight: 600;
+    }
+
+    .btn {
+      border-radius: 20px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .studios-section {
+    margin-bottom: 3rem;
+
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      border: none;
+
+      .card-body {
+        padding: 3rem;
+      }
+    }
+  }
 }

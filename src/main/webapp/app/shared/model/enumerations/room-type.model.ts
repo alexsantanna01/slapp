@@ -8,4 +8,6 @@ export enum RoomType {
   MIXING = 'MIXING',
 
   MASTERING = 'MASTERING',
+
+  BOTH = 'BOTH',
 }

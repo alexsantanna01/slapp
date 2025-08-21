@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { IUserProfile } from 'app/shared/model/user-profile.model';
 import { ICancellationPolicy } from 'app/shared/model/cancellation-policy.model';
+import { IRoom } from './room.model';
 
 export interface IStudio {
   id?: number;
@@ -20,7 +21,13 @@ export interface IStudio {
   createdAt?: dayjs.Dayjs | null;
   updatedAt?: dayjs.Dayjs | null;
   owner?: IUserProfile;
+  rooms?: IRoom[] | null;
   cancellationPolicy?: ICancellationPolicy | null;
+  // Campos calculados/virtuais
+  averageRating?: number;
+  reviewCount?: number;
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 export const defaultValue: Readonly<IStudio> = {

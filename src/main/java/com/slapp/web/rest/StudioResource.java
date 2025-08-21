@@ -1,13 +1,17 @@
 package com.slapp.web.rest;
 
 import com.slapp.repository.StudioRepository;
+import com.slapp.repository.projections.StudioDetailProjection;
+import com.slapp.repository.projections.StudioListProjection;
 import com.slapp.service.StudioQueryService;
 import com.slapp.service.StudioService;
 import com.slapp.service.criteria.StudioCriteria;
 import com.slapp.service.dto.StudioDTO;
+import com.slapp.service.dto.StudioFilterDTO;
 import com.slapp.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -19,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -177,11 +182,22 @@ public class StudioResource {
      * @param id the id of the studioDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the studioDTO, or with status {@code 404 (Not Found)}.
      */
+    // @GetMapping("/{id}")
+    // public ResponseEntity<StudioDTO> getStudio(@PathVariable("id") Long id) {
+    //     LOG.debug("REST request to get Studio : {}", id);
+    //     Optional<StudioDTO> studioDTO = studioService.findOne(id);
+    //     return ResponseUtil.wrapOrNotFound(studioDTO);
+    // }
+
+    /**
+     * GET /api/studios/{id}/detail
+     * Retorna os detalhes completos do studio com rooms e imagens
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<StudioDTO> getStudio(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get Studio : {}", id);
-        Optional<StudioDTO> studioDTO = studioService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(studioDTO);
+    public ResponseEntity<StudioDetailProjection> getStudioDetail(@PathVariable Long id) {
+        Optional<StudioDetailProjection> studioDetail = studioService.getStudioDetail(id);
+
+        return studioDetail.map(studio -> ResponseEntity.ok().body(studio)).orElse(ResponseEntity.notFound().build());
     }
 
     /**
@@ -197,5 +213,34 @@ public class StudioResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code GET  } : get all the studios.
+     *
+     * @param pageable the pagination information.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of studios in body.
+     */
+    @GetMapping("/pagination")
+    public ResponseEntity<List<StudioListProjection>> getAllStudiosPagination(
+        Pageable pageable,
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String city,
+        @RequestParam(required = false) String roomType,
+        @RequestParam(required = false) BigDecimal minPrice,
+        @RequestParam(required = false) BigDecimal maxPrice
+    ) {
+        StudioFilterDTO filters = StudioFilterDTO.builder()
+            .name(name)
+            .city(city)
+            .roomType(roomType)
+            .minPrice(minPrice)
+            .maxPrice(maxPrice)
+            .build();
+
+        final Page<StudioListProjection> page = studioService.getStudioRoomPagination(pageable, filters);
+
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 }
