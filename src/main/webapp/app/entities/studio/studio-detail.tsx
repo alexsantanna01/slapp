@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Col, Row, Card, CardBody, Badge } from 'reactstrap';
 import { TextFormat, Translate } from 'react-jhipster';
@@ -13,11 +13,19 @@ export const StudioDetail = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams<'id'>();
 
+  const studioEntity = useAppSelector(state => state.studio.entity);
+  const accoutntEntity = useAppSelector(state => state.authentication.account);
+  const [isOwner, setIsOwner] = useState(false);
+
   useEffect(() => {
     dispatch(getEntity(id));
   }, []);
 
-  const studioEntity = useAppSelector(state => state.studio.entity);
+  useEffect(() => {
+    if (studioEntity && accoutntEntity !== undefined) {
+      setIsOwner(studioEntity?.owner?.id === accoutntEntity.id);
+    }
+  }, [studioEntity, accoutntEntity]);
 
   if (!studioEntity) {
     return <div>Loading...</div>;
@@ -246,61 +254,26 @@ export const StudioDetail = () => {
                       </Col>
                     ))}
                   </Row>
+                  {/* Botões de Ação */}
+                  <Row className="d-flex justify-content-between w-100 w-100" style={{ marginTop: '1rem' }}>
+                    <Button tag={Link} to="/studio" replace className="button-slapp-voltar">
+                      <FontAwesomeIcon icon="arrow-left" />{' '}
+                      <span className="d-none d-md-inline">
+                        <Translate contentKey="entity.action.back">Voltar</Translate>
+                      </span>
+                    </Button>
+                    {isOwner && (
+                      <Button tag={Link} to={`/studio/${studioEntity.id}/edit`} replace className="button-slapp-editar">
+                        <FontAwesomeIcon icon="pencil-alt" />{' '}
+                        <span className="d-none d-md-inline">
+                          <Translate contentKey="entity.action.edit">Editar</Translate>
+                        </span>
+                      </Button>
+                    )}
+                  </Row>
                 </CardBody>
               </Card>
             )}
-
-            {/* Botões de Ação */}
-            <div style={{ textAlign: 'center', marginTop: '2rem', paddingBottom: '2rem' }}>
-              <Button
-                tag={Link}
-                to="/studio"
-                replace
-                style={{
-                  backgroundColor: 'var(--wood-brown)',
-                  borderColor: 'var(--wood-brown)',
-                  marginRight: '1rem',
-                  padding: '0.75rem 2rem',
-                }}
-                onMouseEnter={e => {
-                  (e.target as HTMLElement).style.backgroundColor = 'var(--wood-light)';
-                  (e.target as HTMLElement).style.borderColor = 'var(--wood-light)';
-                }}
-                onMouseLeave={e => {
-                  (e.target as HTMLElement).style.backgroundColor = 'var(--wood-brown)';
-                  (e.target as HTMLElement).style.borderColor = 'var(--wood-brown)';
-                }}
-              >
-                <FontAwesomeIcon icon="arrow-left" />{' '}
-                <span className="d-none d-md-inline">
-                  <Translate contentKey="entity.action.back">Voltar</Translate>
-                </span>
-              </Button>
-
-              <Button
-                tag={Link}
-                to={`/studio/${studioEntity.id}/edit`}
-                replace
-                style={{
-                  backgroundColor: 'var(--gold-primary)',
-                  borderColor: 'var(--gold-primary)',
-                  padding: '0.75rem 2rem',
-                }}
-                onMouseEnter={e => {
-                  (e.target as HTMLElement).style.backgroundColor = 'var(--gold-dark)';
-                  (e.target as HTMLElement).style.borderColor = 'var(--gold-dark)';
-                }}
-                onMouseLeave={e => {
-                  (e.target as HTMLElement).style.backgroundColor = 'var(--gold-primary)';
-                  (e.target as HTMLElement).style.borderColor = 'var(--gold-primary)';
-                }}
-              >
-                <FontAwesomeIcon icon="pencil-alt" />{' '}
-                <span className="d-none d-md-inline">
-                  <Translate contentKey="entity.action.edit">Editar</Translate>
-                </span>
-              </Button>
-            </div>
           </Col>
         </Row>
       </div>

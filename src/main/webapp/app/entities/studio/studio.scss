@@ -57,6 +57,36 @@
   }
 }
 
+.button-slapp-editar {
+  background-color: var(--gold-primary);
+  border-color: var(--gold-primary);
+  padding: 0.75rem 2rem;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  width: 10em;
+
+  &:hover {
+    background-color: var(--gold-dark);
+    border-color: var(--gold-dark);
+  }
+}
+
+.button-slapp-voltar {
+  width: 10em;
+  background-color: var(--wood-brown);
+  border-color: var(--wood-brown);
+  padding: 0.75rem 2rem;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: var(--wood-light);
+    border-color: var(--wood-light);
+  }
+}
+
 // src/main/webapp/app/modules/home/home.scss
 
 .home {
