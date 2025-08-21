@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { IStudio } from 'app/shared/model/studio.model';
 import { RoomType } from 'app/shared/model/enumerations/room-type.model';
+import { IRoomImage } from './room-image.model';
 
 export interface IRoom {
   id?: number;
@@ -15,6 +16,7 @@ export interface IRoom {
   createdAt?: dayjs.Dayjs | null;
   updatedAt?: dayjs.Dayjs | null;
   studio?: IStudio;
+  roomImages?: IRoomImage[] | null;
 }
 
 export const defaultValue: Readonly<IRoom> = {

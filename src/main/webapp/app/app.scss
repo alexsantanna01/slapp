@@ -6,6 +6,19 @@ body {
   background: #fafafa;
   margin: 0;
 }
+:root {
+  --gold-primary: #d4a037; /* cor principal do logo */
+  --gold-dark: #9b6c1f; /* versão escurecida para hover / títulos */
+  --wood-brown: #4d3424; /* marrom escuro do ambiente do estúdio */
+  --wood-light: #7a573f; /* marrom médio das madeiras */
+  --off-beige: #f5e9d5; /* cor clara para fundo, inspirada na iluminação quente */
+  --text-base: #1a1a1a; /* cor padrão de texto */
+  --border-input: #c1b59e;
+  --background-input: #fdf9f1;
+  --background-card: #fdfcf8;
+  --disabled: #8b8b8b;
+  --text-button-primary: #ffffff;
+}
 
 a {
   color: #533f03;
@@ -24,16 +37,18 @@ a {
 
 .app-container {
   box-sizing: border-box;
+  background-color: var(--background-input);
   .view-container {
     width: 100%;
     height: calc(100% - 40px);
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 1rem;
+    padding: 0;
     .card {
       padding: 1rem;
     }
     .view-routes {
+      background-color: var(--background-input);
       height: 100%;
       > div {
         height: 100%;

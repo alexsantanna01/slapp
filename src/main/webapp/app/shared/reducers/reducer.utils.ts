@@ -9,10 +9,24 @@ import {
 } from '@reduxjs/toolkit';
 import { AxiosError, isAxiosError } from 'axios';
 
+// Interface para os parâmetros de filtro
+export interface IStudioFilters {
+  page?: number;
+  size?: number;
+  sort?: string;
+  name?: string;
+  city?: string;
+  roomType?: string; // 'RECORDING' | 'REHEARSAL' | 'BOTH'
+  minPrice?: number;
+  maxPrice?: number;
+}
+
 /**
  * Model for redux actions with pagination
  */
 export type IQueryParams = { query?: string; page?: number; size?: number; sort?: string };
+
+export type IQueryParamsStudio = { query?: string; page?: number; size?: number; sort?: string; filters?: IStudioFilters };
 
 /**
  * Useful types for working with actions
@@ -71,6 +85,7 @@ export interface EntityState<T> {
   errorMessage: string | null;
   entities: ReadonlyArray<T>;
   entity: T;
+  entitiesPage?: ReadonlyArray<T>;
   links?: any;
   updating: boolean;
   totalItems?: number;
