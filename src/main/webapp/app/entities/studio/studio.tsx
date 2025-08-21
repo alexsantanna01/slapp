@@ -74,8 +74,6 @@ export const Studio = () => {
           sort: 'name,asc',
         }),
       );
-      // eslint-disable-next-line no-console
-      console.log('Buscando estudios com filtros:', filters);
     }
   }, [dispatch, account, filters]);
 

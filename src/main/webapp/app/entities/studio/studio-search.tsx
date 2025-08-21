@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // src/main/webapp/app/modules/home/studio-search.tsx
 import React, { useEffect, useState } from 'react';
 import { Card, CardBody, Form, FormGroup, Label, Input, Button, Row, Col } from 'reactstrap';
@@ -62,9 +61,6 @@ const StudioSearch = (props: StudioSearchProps) => {
     }));
   };
 
-  useEffect(() => {
-    console.log('Filters:', filters);
-  }, [filters]);
   const clearFilters = () => {
     setPesquisa({
       name: '',
