@@ -11,7 +11,7 @@ interface ISearchFilters {
   sort?: string;
   name?: string;
   city?: string;
-  roomType?: string; // 'RECORDING' | 'REHEARSAL' | 'BOTH'
+  roomType?: string; // 'RECORDING' | 'REHEARSAL' | 'BOTH' | '';
   minPrice?: number;
   maxPrice?: number;
 }
@@ -117,7 +117,8 @@ const StudioSearch = (props: StudioSearchProps) => {
                   <option value="">Todos os tipos</option>
                   <option value={RoomType.RECORDING}>Gravação</option>
                   <option value={RoomType.REHEARSAL}>Ensaio</option>
-                  <option value={RoomType.BOTH}>Ambos</option>
+                  <option value={RoomType.MIXING}>Mixagem</option>
+                  <option value={RoomType.LIVE}>Live</option>
                 </Input>
               </FormGroup>
             </Col>

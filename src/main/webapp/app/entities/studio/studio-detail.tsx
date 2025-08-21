@@ -156,22 +156,7 @@ export const StudioDetail = () => {
                   <Row>
                     {studioEntity.rooms.map((room, index) => (
                       <Col md="6" lg="4" key={room.id} style={{ marginBottom: '2rem' }}>
-                        <Card
-                          style={{
-                            height: '100%',
-                            border: '1px solid var(--border-input)',
-                            transition: 'transform 0.2s, box-shadow 0.2s',
-                            cursor: 'pointer',
-                          }}
-                          onMouseEnter={e => {
-                            e.currentTarget.style.transform = 'translateY(-5px)';
-                            e.currentTarget.style.boxShadow = '0 6px 12px rgba(0,0,0,0.15)';
-                          }}
-                          onMouseLeave={e => {
-                            e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                          }}
-                        >
+                        <Card className="studio-card h-100 shadow-sm">
                           {/* Carousel de Imagens da Sala */}
                           {room.roomImages && room.roomImages.length > 0 && (
                             <div
@@ -207,7 +192,7 @@ export const StudioDetail = () => {
                             </div>
                           )}
 
-                          <CardBody style={{ padding: '1.2rem' }}>
+                          <CardBody className="d-flex flex-column">
                             <h5 style={{ color: 'var(--wood-brown)', fontWeight: 'bold', marginBottom: '0.8rem' }}>{room.name}</h5>
 
                             <p style={{ color: 'var(--text-base)', fontSize: '0.9rem', marginBottom: '1rem' }}>{room.description}</p>
