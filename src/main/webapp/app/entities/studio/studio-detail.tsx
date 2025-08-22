@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, Card, CardBody, Badge } from 'reactstrap';
-import { TextFormat, Translate } from 'react-jhipster';
+import { Button, Col, Row, Card, CardBody, Badge, Alert } from 'reactstrap';
+import { TextFormat, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { toast } from 'react-toastify';
 
 import { APP_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './studio.reducer';
+import { createEntity as createReservation, reset as resetReservation } from '../reservation/reservation.reducer';
+import { ReservationStatus } from 'app/shared/model/enumerations/reservation-status.model';
+import ReservationCalendar from './components/ReservationCalendar';
+import PendingReservations from './components/PendingReservations';
 
 export const StudioDetail = () => {
   const dispatch = useAppDispatch();
@@ -15,7 +20,11 @@ export const StudioDetail = () => {
 
   const studioEntity = useAppSelector(state => state.studio.entity);
   const accoutntEntity = useAppSelector(state => state.authentication.account);
+  const reservationUpdateSuccess = useAppSelector(state => state.reservation.updateSuccess);
+
   const [isOwner, setIsOwner] = useState(false);
+  const [reservationModalOpen, setReservationModalOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<any>(null);
 
   useEffect(() => {
     dispatch(getEntity(id));
@@ -26,6 +35,50 @@ export const StudioDetail = () => {
       setIsOwner(studioEntity?.owner?.id === accoutntEntity.id);
     }
   }, [studioEntity, accoutntEntity]);
+
+  useEffect(() => {
+    if (reservationUpdateSuccess) {
+      toast.success('Reserva criada com sucesso!');
+      setReservationModalOpen(false);
+      setSelectedRoom(null);
+      // dispatch(resetReservation());
+    }
+  }, [reservationUpdateSuccess]);
+
+  const handleReserveRoom = (room: any) => {
+    if (!accoutntEntity) {
+      toast.error('Você precisa estar logado para fazer uma reserva');
+      return;
+    }
+    setSelectedRoom(room);
+    setReservationModalOpen(true);
+  };
+
+  const handleReservationConfirm = (reservationData: any) => {
+    try {
+      const reservation = {
+        startDateTime: reservationData.startDateTime,
+        endDateTime: reservationData.endDateTime,
+        totalPrice: reservationData.totalPrice,
+        status: ReservationStatus.PENDING,
+        notes: reservationData.notes,
+        customer: { id: accoutntEntity.id },
+        room: { id: reservationData.roomId },
+      };
+
+      dispatch(createReservation(reservation));
+    } catch (error) {
+      toast.error('Erro ao criar reserva');
+      console.error('Error creating reservation:', error);
+    }
+  };
+
+  const toggleReservationModal = () => {
+    setReservationModalOpen(!reservationModalOpen);
+    if (reservationModalOpen) {
+      setSelectedRoom(null);
+    }
+  };
 
   if (!studioEntity) {
     return <div>Loading...</div>;
@@ -217,7 +270,7 @@ export const StudioDetail = () => {
                               </small>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
                               {room.soundproofed && (
                                 <Badge style={{ backgroundColor: 'var(--wood-light)', color: 'white', fontSize: '0.75rem' }}>
                                   <FontAwesomeIcon icon="volume-mute" /> Isolada
@@ -234,6 +287,21 @@ export const StudioDetail = () => {
                                 </Badge>
                               )}
                             </div>
+
+                            {/* Botão de Reserva */}
+                            {room.active && !isOwner && accoutntEntity && (
+                              <div className="mt-auto">
+                                <Button
+                                  color="primary"
+                                  size="sm"
+                                  block
+                                  onClick={() => handleReserveRoom(room)}
+                                  className="button-slapp-primary"
+                                >
+                                  <FontAwesomeIcon icon="calendar-plus" /> Reservar
+                                </Button>
+                              </div>
+                            )}
                           </CardBody>
                         </Card>
                       </Col>
@@ -259,9 +327,22 @@ export const StudioDetail = () => {
                 </CardBody>
               </Card>
             )}
+
+            {/* Reservas Pendentes - Apenas para proprietários */}
+            {isOwner && <PendingReservations studioId={studioEntity.id} isOwner={isOwner} />}
           </Col>
         </Row>
       </div>
+
+      {/* Modal de Reserva */}
+      {selectedRoom && (
+        <ReservationCalendar
+          isOpen={reservationModalOpen}
+          toggle={toggleReservationModal}
+          room={selectedRoom}
+          onReservationConfirm={handleReservationConfirm}
+        />
+      )}
     </div>
   );
 };

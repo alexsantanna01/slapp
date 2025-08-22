@@ -202,4 +202,77 @@ public class ReservationResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    /**
+     * {@code GET  /reservations/room/{roomId}/availability} : get availability for a room on a specific date.
+     *
+     * @param roomId the id of the room to check availability.
+     * @param date the date to check (format: yyyy-mm-dd).
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the availability data.
+     */
+    @GetMapping("/room/{roomId}/availability")
+    public ResponseEntity<List<ReservationDTO>> getRoomAvailability(
+        @PathVariable("roomId") Long roomId,
+        @RequestParam("date") String date
+    ) {
+        LOG.debug("REST request to get room availability for room: {} on date: {}", roomId, date);
+        List<ReservationDTO> reservations = reservationService.findReservationsByRoomAndDate(roomId, date);
+        return ResponseEntity.ok().body(reservations);
+    }
+
+    /**
+     * {@code POST  /reservations/{id}/approve} : approve a pending reservation.
+     *
+     * @param id the id of the reservation to approve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated reservationDTO.
+     */
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<ReservationDTO> approveReservation(@PathVariable("id") Long id) {
+        LOG.debug("REST request to approve Reservation : {}", id);
+        Optional<ReservationDTO> result = reservationService.approveReservation(id);
+        return ResponseUtil.wrapOrNotFound(result);
+    }
+
+    /**
+     * {@code POST  /reservations/{id}/reject} : reject a pending reservation.
+     *
+     * @param id the id of the reservation to reject.
+     * @param reason the reason for rejection.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated reservationDTO.
+     */
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<ReservationDTO> rejectReservation(
+        @PathVariable("id") Long id,
+        @RequestParam(value = "reason", required = false) String reason
+    ) {
+        LOG.debug("REST request to reject Reservation : {} with reason: {}", id, reason);
+        Optional<ReservationDTO> result = reservationService.rejectReservation(id, reason);
+        return ResponseUtil.wrapOrNotFound(result);
+    }
+
+    /**
+     * {@code GET  /reservations/studio/{studioId}/pending} : get pending reservations for a studio.
+     *
+     * @param studioId the id of the studio.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of pending reservations.
+     */
+    @GetMapping("/studio/{studioId}/pending")
+    public ResponseEntity<List<ReservationDTO>> getPendingReservationsForStudio(@PathVariable("studioId") Long studioId) {
+        LOG.debug("REST request to get pending reservations for studio: {}", studioId);
+        List<ReservationDTO> pendingReservations = reservationService.findPendingReservationsByStudio(studioId);
+        return ResponseEntity.ok().body(pendingReservations);
+    }
+
+    /**
+     * {@code GET  /reservations/room/{roomId}/all} : get all reservations for a room.
+     *
+     * @param roomId the id of the room.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of all reservations.
+     */
+    @GetMapping("/room/{roomId}/all")
+    public ResponseEntity<List<ReservationDTO>> getAllReservationsForRoom(@PathVariable("roomId") Long roomId) {
+        LOG.debug("REST request to get all reservations for room: {}", roomId);
+        List<ReservationDTO> allReservations = reservationService.findAllReservationsByRoom(roomId);
+        return ResponseEntity.ok().body(allReservations);
+    }
 }

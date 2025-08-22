@@ -1,6 +1,7 @@
 package com.slapp.service;
 
 import com.slapp.service.dto.ReservationDTO;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -45,4 +46,53 @@ public interface ReservationService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    /**
+     * Get reservations for a room on a specific date.
+     *
+     * @param roomId the room id.
+     * @param date the date string (yyyy-mm-dd).
+     * @return the list of reservations.
+     */
+    List<ReservationDTO> findReservationsByRoomAndDate(Long roomId, String date);
+
+    /**
+     * Approve a pending reservation.
+     *
+     * @param id the reservation id.
+     * @return the updated reservation.
+     */
+    Optional<ReservationDTO> approveReservation(Long id);
+
+    /**
+     * Reject a pending reservation.
+     *
+     * @param id the reservation id.
+     * @param reason the reason for rejection.
+     * @return the updated reservation.
+     */
+    Optional<ReservationDTO> rejectReservation(Long id, String reason);
+
+    /**
+     * Get pending reservations for a studio.
+     *
+     * @param studioId the studio id.
+     * @return the list of pending reservations.
+     */
+    List<ReservationDTO> findPendingReservationsByStudio(Long studioId);
+
+    /**
+     * Auto-confirm reservations that have been pending for more than 30 minutes.
+     *
+     * @return the number of reservations auto-confirmed.
+     */
+    int autoConfirmExpiredPendingReservations();
+
+    /**
+     * Get all reservations for a room (for debugging).
+     *
+     * @param roomId the room id.
+     * @return the list of all reservations.
+     */
+    List<ReservationDTO> findAllReservationsByRoom(Long roomId);
 }
