@@ -3,8 +3,10 @@ package com.slapp.web.rest;
 import com.slapp.repository.RoomRepository;
 import com.slapp.service.RoomQueryService;
 import com.slapp.service.RoomService;
+import com.slapp.service.StudioOperatingHoursService;
 import com.slapp.service.criteria.RoomCriteria;
 import com.slapp.service.dto.RoomDTO;
+import com.slapp.service.dto.StudioOperatingHoursDTO;
 import com.slapp.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -46,10 +48,18 @@ public class RoomResource {
 
     private final RoomQueryService roomQueryService;
 
-    public RoomResource(RoomService roomService, RoomRepository roomRepository, RoomQueryService roomQueryService) {
+    private final StudioOperatingHoursService studioOperatingHoursService;
+
+    public RoomResource(
+        RoomService roomService,
+        RoomRepository roomRepository,
+        RoomQueryService roomQueryService,
+        StudioOperatingHoursService studioOperatingHoursService
+    ) {
         this.roomService = roomService;
         this.roomRepository = roomRepository;
         this.roomQueryService = roomQueryService;
+        this.studioOperatingHoursService = studioOperatingHoursService;
     }
 
     /**
@@ -197,5 +207,22 @@ public class RoomResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code GET  /rooms/:id/operating-hours} : get the operating hours for a room's studio.
+     *
+     * @param id the id of the room.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of operating hours.
+     */
+    @GetMapping("/{id}/operating-hours")
+    public ResponseEntity<List<StudioOperatingHoursDTO>> getRoomOperatingHours(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get operating hours for room : {}", id);
+        Optional<RoomDTO> roomDTO = roomService.findOne(id);
+        if (roomDTO.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        List<StudioOperatingHoursDTO> operatingHours = studioOperatingHoursService.findByStudioId(roomDTO.get().getStudio().getId());
+        return ResponseEntity.ok().body(operatingHours);
     }
 }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="20250822131400-1" author="slapp">
+        <createTable tableName="studio_operating_hours">
+            <column name="id" type="bigint" autoIncrement="true" startWith="1" incrementBy="1">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="day_of_week" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_time" type="time">
+                <constraints nullable="true"/>
+            </column>
+            <column name="end_time" type="time">
+                <constraints nullable="true"/>
+            </column>
+            <column name="is_open" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="studio_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20250822131400-2" author="slapp">
+        <addForeignKeyConstraint baseColumnNames="studio_id"
+                                 baseTableName="studio_operating_hours"
+                                 constraintName="fk_studio_operating_hours_studio_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="studio"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="20250822131400-3" author="slapp">
+        <addUniqueConstraint columnNames="studio_id, day_of_week"
+                             constraintName="uk_studio_operating_hours_studio_day"
+                             tableName="studio_operating_hours"/>
+    </changeSet>
+
+    <!-- Add some default operating hours for existing studios -->
+    <changeSet id="20250822131400-4" author="slapp">
+        <sql>
+            INSERT INTO studio_operating_hours (day_of_week, start_time, end_time, is_open, studio_id)
+            SELECT 'MONDAY', '08:00:00', '22:00:00', true, s.id FROM studio s WHERE s.active = true;
+            
+            INSERT INTO studio_operating_hours (day_of_week, start_time, end_time, is_open, studio_id)
+            SELECT 'TUESDAY', '08:00:00', '22:00:00', true, s.id FROM studio s WHERE s.active = true;
+            
+            INSERT INTO studio_operating_hours (day_of_week, start_time, end_time, is_open, studio_id)
+            SELECT 'WEDNESDAY', '08:00:00', '22:00:00', true, s.id FROM studio s WHERE s.active = true;
+            
+            INSERT INTO studio_operating_hours (day_of_week, start_time, end_time, is_open, studio_id)
+            SELECT 'THURSDAY', '08:00:00', '22:00:00', true, s.id FROM studio s WHERE s.active = true;
+            
+            INSERT INTO studio_operating_hours (day_of_week, start_time, end_time, is_open, studio_id)
+            SELECT 'FRIDAY', '08:00:00', '22:00:00', true, s.id FROM studio s WHERE s.active = true;
+            
+            INSERT INTO studio_operating_hours (day_of_week, start_time, end_time, is_open, studio_id)
+            SELECT 'SATURDAY', '08:00:00', '22:00:00', true, s.id FROM studio s WHERE s.active = true;
+            
+            INSERT INTO studio_operating_hours (day_of_week, start_time, end_time, is_open, studio_id)
+            SELECT 'SUNDAY', NULL, NULL, false, s.id FROM studio s WHERE s.active = true;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
