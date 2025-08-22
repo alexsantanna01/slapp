@@ -1,20 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Col, Container, Label, Row, Table } from 'reactstrap';
-import { JhiItemCount, JhiPagination, TextFormat, Translate, getPaginationState } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import { APP_DATE_FORMAT } from 'app/config/constants';
-import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Col, Container, Label, Row } from 'reactstrap';
+import { getPaginationState } from 'react-jhipster';
+import { ASC, DESC, ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { Box, Typography, Grid } from '@mui/material';
 import { styled } from '@mui/system';
 
-import { getEntities, getStudioPagination, loadMoreStudios, resetPagination } from 'app/entities/studio/studio.reducer';
+import { getStudioPagination, loadMoreStudios, resetPagination } from 'app/entities/studio/studio.reducer';
 import StudioSearch from './studio-search';
 import StudioList from './studio-list';
-import { toast } from 'react-toastify';
 
 const SearchSection = styled(Box)(({ theme }) => ({
   padding: '40px 0',
@@ -161,7 +157,7 @@ export const Studio = () => {
 
       {/* Lista de Estúdios */}
       <Container sx={{ py: 4 }} mb={4} mt={4}>
-        <Row container spacing={4} mb={4} mt={4}>
+        <Row className="mb-4 mt-4">
           {/* Indicador de carregamento inicial */}
           {loading ? (
             <div className="w-100 text-center py-5">

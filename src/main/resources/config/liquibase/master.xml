@@ -22,6 +22,8 @@
     <include file="config/liquibase/changelog/20250820014619_added_entity_SpecialPrice.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250820014620_added_entity_Availability.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250820014621_added_entity_CancellationPolicy.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250822131300_added_columns_artist_info_Reservation.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250822131400_added_entity_StudioOperatingHours.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20250820014612_added_entity_constraints_UserProfile.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250820014613_added_entity_constraints_Studio.xml" relativeToChangelogFile="false"/>
