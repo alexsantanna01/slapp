@@ -43,6 +43,12 @@ public class ReservationDTO implements Serializable {
     @Size(max = 500)
     private String cancelReason;
 
+    @Size(max = 255)
+    private String artistName;
+
+    @Lob
+    private String instruments;
+
     @NotNull
     private UserProfileDTO customer;
 
@@ -129,6 +135,22 @@ public class ReservationDTO implements Serializable {
         this.cancelReason = cancelReason;
     }
 
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getInstruments() {
+        return instruments;
+    }
+
+    public void setInstruments(String instruments) {
+        this.instruments = instruments;
+    }
+
     public UserProfileDTO getCustomer() {
         return customer;
     }
@@ -180,6 +202,8 @@ public class ReservationDTO implements Serializable {
             ", updatedAt='" + getUpdatedAt() + "'" +
             ", cancelledAt='" + getCancelledAt() + "'" +
             ", cancelReason='" + getCancelReason() + "'" +
+            ", artistName='" + getArtistName() + "'" +
+            ", instruments='" + getInstruments() + "'" +
             ", customer=" + getCustomer() +
             ", room=" + getRoom() +
             "}";

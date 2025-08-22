@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Row, Col, Badge, Alert } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Row, Col, Badge, Alert, FormGroup, Label, Input } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 
@@ -22,6 +22,8 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
   const [selectedTimeSlots, setSelectedTimeSlots] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const [artistName, setArtistName] = useState<string>('');
+  const [instruments, setInstruments] = useState<string>('');
 
   const operatingHours = { start: 8, end: 22 };
 
@@ -30,6 +32,16 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
       loadAvailability();
     }
   }, [isOpen, room, selectedDate]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      // Reset form when modal is closed
+      setSelectedTimeSlots([]);
+      setArtistName('');
+      setInstruments('');
+      setError('');
+    }
+  }, [isOpen]);
 
   const loadAvailability = async () => {
     setLoading(true);
@@ -125,6 +137,8 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
       endDateTime: endDateTime.toISOString(),
       totalPrice,
       notes: `Reserva para ${duration} hora(s)`,
+      artistName: artistName.trim() || undefined,
+      instruments: instruments.trim() || undefined,
     };
 
     onReservationConfirm(reservationData);
@@ -209,15 +223,55 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
             </Row>
 
             {selectedTimeSlots.length > 0 && (
-              <Alert color="info" className="mt-3">
-                <strong>Resumo da Reserva:</strong>
-                <br />
-                Horários selecionados: {selectedTimeSlots.map(h => formatHour(h)).join(', ')}
-                <br />
-                Duração: {selectedTimeSlots.length} hora(s)
-                <br />
-                Valor total: R$ {(room?.hourlyRate * selectedTimeSlots.length)?.toFixed(2)}
-              </Alert>
+              <>
+                <Alert color="info" className="mt-3">
+                  <strong>Resumo da Reserva:</strong>
+                  <br />
+                  Horários selecionados: {selectedTimeSlots.map(h => formatHour(h)).join(', ')}
+                  <br />
+                  Duração: {selectedTimeSlots.length} hora(s)
+                  <br />
+                  Valor total: R$ {(room?.hourlyRate * selectedTimeSlots.length)?.toFixed(2)}
+                </Alert>
+
+                <div className="mt-4 p-3 border rounded">
+                  <h6 className="mb-3">
+                    <FontAwesomeIcon icon="music" /> Informações Adicionais
+                  </h6>
+
+                  <Row>
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="artistName">Nome da Banda/Artista/Produtor</Label>
+                        <Input
+                          type="text"
+                          id="artistName"
+                          value={artistName}
+                          onChange={e => setArtistName(e.target.value)}
+                          placeholder="Ex: Banda XYZ, João Silva, etc."
+                          maxLength={255}
+                        />
+                        <small className="text-muted">Opcional - Quem irá usar a sala</small>
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="instruments">Instrumentos a serem utilizados</Label>
+                        <Input
+                          type="textarea"
+                          id="instruments"
+                          value={instruments}
+                          onChange={e => setInstruments(e.target.value)}
+                          placeholder="Ex: Guitarra, Bateria, Baixo, Vocal..."
+                          rows={3}
+                        />
+                        <small className="text-muted">Opcional - Liste os instrumentos que serão usados</small>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </div>
+              </>
             )}
           </div>
         )}

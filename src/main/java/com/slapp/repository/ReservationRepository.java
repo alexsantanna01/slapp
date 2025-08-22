@@ -40,7 +40,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
     );
 
     @Query(
-        "SELECT r FROM Reservation r JOIN r.room rm JOIN rm.studio s " +
+        "SELECT r FROM Reservation r " +
+        "JOIN FETCH r.room rm " +
+        "JOIN FETCH rm.studio s " +
+        "JOIN FETCH r.customer c " +
+        "LEFT JOIN FETCH c.user u " +
         "WHERE s.id = :studioId AND r.status = 'PENDING' " +
         "ORDER BY r.createdAt ASC"
     )

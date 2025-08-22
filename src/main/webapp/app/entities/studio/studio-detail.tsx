@@ -62,6 +62,8 @@ export const StudioDetail = () => {
         totalPrice: reservationData.totalPrice,
         status: ReservationStatus.PENDING,
         notes: reservationData.notes,
+        artistName: reservationData.artistName,
+        instruments: reservationData.instruments,
         customer: { id: accoutntEntity.id },
         room: { id: reservationData.roomId },
       };
