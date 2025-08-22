@@ -17,6 +17,8 @@ interface PendingReservation {
   endDateTime: string;
   totalPrice: number;
   notes?: string;
+  artistName?: string;
+  instruments?: string;
   createdAt: string;
   customer: {
     id: number;
@@ -29,6 +31,10 @@ interface PendingReservation {
   room: {
     id: number;
     name: string;
+    studio?: {
+      id: number;
+      name: string;
+    };
   };
 }
 
@@ -157,13 +163,27 @@ export const PendingReservations: React.FC<PendingReservationsProps> = ({ studio
                         <FontAwesomeIcon icon="door-open" /> {reservation.room.name}
                       </h6>
                       <p className="mb-1">
-                        <FontAwesomeIcon icon="user" /> <strong>Cliente:</strong> {reservation.customer.user?.firstName}{' '}
-                        {reservation.customer.user?.lastName} ({reservation.customer.user?.login})
+                        <FontAwesomeIcon icon="user" /> <strong>Cliente:</strong> {reservation.customer?.user?.firstName || 'N/A'}{' '}
+                        {reservation.customer?.user?.lastName || ''}
+                        {reservation.customer?.user?.login && ` (${reservation.customer.user.login})`}
+                      </p>
+                      <p className="mb-1">
+                        <FontAwesomeIcon icon="building" /> <strong>Estúdio:</strong> {reservation.room?.studio?.name || 'N/A'}
                       </p>
                       <p className="mb-1">
                         <FontAwesomeIcon icon="calendar" /> <strong>Data/Hora:</strong> {formatDateTime(reservation.startDateTime)} às{' '}
                         {formatDateTime(reservation.endDateTime)}
                       </p>
+                      {reservation.artistName && (
+                        <p className="mb-1">
+                          <FontAwesomeIcon icon="music" /> <strong>Artista/Banda:</strong> {reservation.artistName}
+                        </p>
+                      )}
+                      {reservation.instruments && (
+                        <p className="mb-1">
+                          <FontAwesomeIcon icon="guitar" /> <strong>Instrumentos:</strong> {reservation.instruments}
+                        </p>
+                      )}
                       <p className="mb-1">
                         <FontAwesomeIcon icon="dollar-sign" /> <strong>Valor:</strong> R$ {reservation.totalPrice.toFixed(2)}
                       </p>

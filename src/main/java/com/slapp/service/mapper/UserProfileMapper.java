@@ -17,5 +17,9 @@ public interface UserProfileMapper extends EntityMapper<UserProfileDTO, UserProf
     @Named("userId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "login", source = "login")
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
+    @Mapping(target = "email", source = "email")
     UserDTO toDtoUserId(User user);
 }

@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "allow": ["Bash(./gradlew:*)", "Bash(npm run lint:*)"],
+    "allow": ["Bash(./gradlew:*)", "Bash(npm run lint:*)", "Bash(git add:*)"],
     "deny": [],
     "ask": []
   }

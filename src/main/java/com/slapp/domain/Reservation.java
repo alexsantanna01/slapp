@@ -62,6 +62,14 @@ public class Reservation implements Serializable {
     @Column(name = "cancel_reason", length = 500)
     private String cancelReason;
 
+    @Size(max = 255)
+    @Column(name = "artist_name", length = 255)
+    private String artistName;
+
+    @Lob
+    @Column(name = "instruments")
+    private String instruments;
+
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(value = { "user" }, allowSetters = true)
@@ -204,6 +212,32 @@ public class Reservation implements Serializable {
         this.cancelReason = cancelReason;
     }
 
+    public String getArtistName() {
+        return this.artistName;
+    }
+
+    public Reservation artistName(String artistName) {
+        this.setArtistName(artistName);
+        return this;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getInstruments() {
+        return this.instruments;
+    }
+
+    public Reservation instruments(String instruments) {
+        this.setInstruments(instruments);
+        return this;
+    }
+
+    public void setInstruments(String instruments) {
+        this.instruments = instruments;
+    }
+
     public UserProfile getCustomer() {
         return this.customer;
     }
@@ -263,6 +297,8 @@ public class Reservation implements Serializable {
             ", updatedAt='" + getUpdatedAt() + "'" +
             ", cancelledAt='" + getCancelledAt() + "'" +
             ", cancelReason='" + getCancelReason() + "'" +
+            ", artistName='" + getArtistName() + "'" +
+            ", instruments='" + getInstruments() + "'" +
             "}";
     }
 }
