@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -92,6 +94,11 @@ public class Studio implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private CancellationPolicy cancellationPolicy;
+
+    @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "studio" }, allowSetters = true)
+    private Set<StudioOperatingHours> operatingHours = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -326,6 +333,37 @@ public class Studio implements Serializable {
 
     public Studio cancellationPolicy(CancellationPolicy cancellationPolicy) {
         this.setCancellationPolicy(cancellationPolicy);
+        return this;
+    }
+
+    public Set<StudioOperatingHours> getOperatingHours() {
+        return this.operatingHours;
+    }
+
+    public void setOperatingHours(Set<StudioOperatingHours> studioOperatingHours) {
+        if (this.operatingHours != null) {
+            this.operatingHours.forEach(i -> i.setStudio(null));
+        }
+        if (studioOperatingHours != null) {
+            studioOperatingHours.forEach(i -> i.setStudio(this));
+        }
+        this.operatingHours = studioOperatingHours;
+    }
+
+    public Studio operatingHours(Set<StudioOperatingHours> studioOperatingHours) {
+        this.setOperatingHours(studioOperatingHours);
+        return this;
+    }
+
+    public Studio addOperatingHours(StudioOperatingHours studioOperatingHours) {
+        this.operatingHours.add(studioOperatingHours);
+        studioOperatingHours.setStudio(this);
+        return this;
+    }
+
+    public Studio removeOperatingHours(StudioOperatingHours studioOperatingHours) {
+        this.operatingHours.remove(studioOperatingHours);
+        studioOperatingHours.setStudio(null);
         return this;
     }
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row } from 'reactstrap';
 import { Translate, ValidatedField, ValidatedForm, translate } from 'react-jhipster';
@@ -10,6 +10,17 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities as getUserProfiles } from 'app/entities/user-profile/user-profile.reducer';
 import { getEntities as getCancellationPolicies } from 'app/entities/cancellation-policy/cancellation-policy.reducer';
 import { createEntity, getEntity, reset, updateEntity } from './studio.reducer';
+import OperatingHoursManager from './components/OperatingHoursManager';
+import axios from 'axios';
+
+interface OperatingHours {
+  id?: number;
+  dayOfWeek: string;
+  startTime?: string;
+  endTime?: string;
+  isOpen: boolean;
+  studioId?: number;
+}
 
 export const StudioUpdate = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +29,9 @@ export const StudioUpdate = () => {
 
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
+
+  const [operatingHours, setOperatingHours] = useState<OperatingHours[]>([]);
+  const [operatingHoursSaving, setOperatingHoursSaving] = useState(false);
 
   const userProfiles = useAppSelector(state => state.userProfile.entities);
   const cancellationPolicies = useAppSelector(state => state.cancellationPolicy.entities);
@@ -47,7 +61,7 @@ export const StudioUpdate = () => {
     }
   }, [updateSuccess]);
 
-  const saveEntity = values => {
+  const saveEntity = async values => {
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
     }
@@ -67,10 +81,38 @@ export const StudioUpdate = () => {
       cancellationPolicy: cancellationPolicies.find(it => it.id.toString() === values.cancellationPolicy?.toString()),
     };
 
-    if (isNew) {
-      dispatch(createEntity(entity));
-    } else {
-      dispatch(updateEntity(entity));
+    try {
+      let studioResult;
+      if (isNew) {
+        studioResult = await dispatch(createEntity(entity)).unwrap();
+      } else {
+        studioResult = await dispatch(updateEntity(entity)).unwrap();
+      }
+
+      // Save operating hours after studio is saved
+      if (studioResult && operatingHours.length > 0) {
+        await saveOperatingHours(studioResult.id || id);
+      }
+    } catch (error) {
+      console.error('Error saving studio:', error);
+    }
+  };
+
+  const saveOperatingHours = async (studioId: string | number) => {
+    if (!studioId || operatingHours.length === 0) return;
+
+    setOperatingHoursSaving(true);
+    try {
+      const hoursToSave = operatingHours.map(oh => ({
+        ...oh,
+        studioId: Number(studioId),
+      }));
+
+      await axios.put(`/api/studio-operating-hours/studio/${studioId}`, hoursToSave);
+    } catch (error) {
+      console.error('Error saving operating hours:', error);
+    } finally {
+      setOperatingHoursSaving(false);
     }
   };
 
@@ -288,6 +330,14 @@ export const StudioUpdate = () => {
                     ))
                   : null}
               </ValidatedField>
+              {/* Operating Hours Section */}
+              <div className="mt-4">
+                <OperatingHoursManager
+                  studioId={!isNew ? Number(id) : undefined}
+                  isNew={isNew}
+                  onOperatingHoursChange={setOperatingHours}
+                />
+              </div>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/studio" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
@@ -296,10 +346,17 @@ export const StudioUpdate = () => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button
+                color="primary"
+                id="save-entity"
+                data-cy="entityCreateSaveButton"
+                type="submit"
+                disabled={updating || operatingHoursSaving}
+              >
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>
+                {operatingHoursSaving && <FontAwesomeIcon icon="spinner" spin className="ms-2" />}
               </Button>
             </ValidatedForm>
           )}

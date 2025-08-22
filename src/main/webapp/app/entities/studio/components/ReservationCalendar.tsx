@@ -1,12 +1,23 @@
+/* eslint-disable radix */
 import React, { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Row, Col, Badge, Alert, FormGroup, Label, Input } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { isNull } from 'lodash';
 
 interface TimeSlot {
   hour: number;
   available: boolean;
   reservation?: any;
+}
+
+interface OperatingHours {
+  id?: number;
+  dayOfWeek: string;
+  startTime?: string;
+  endTime?: string;
+  isOpen: boolean;
 }
 
 interface ReservationCalendarProps {
@@ -24,14 +35,30 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
   const [error, setError] = useState<string>('');
   const [artistName, setArtistName] = useState<string>('');
   const [instruments, setInstruments] = useState<string>('');
+  const [operatingHours, setOperatingHours] = useState<OperatingHours[]>([]);
+  const [currentDayHours, setCurrentDayHours] = useState<{ start: number; end: number; isOpen: boolean }>({
+    start: 8,
+    end: 22,
+    isOpen: true,
+  });
 
-  const operatingHours = { start: 8, end: 22 };
+  useEffect(() => {
+    if (isOpen && room) {
+      loadOperatingHours();
+    }
+  }, [isOpen, room]);
+
+  useEffect(() => {
+    if (isOpen && room && selectedDate && operatingHours.length > 0) {
+      updateCurrentDayHours();
+    }
+  }, [isOpen, room, selectedDate, operatingHours]);
 
   useEffect(() => {
     if (isOpen && room && selectedDate) {
       loadAvailability();
     }
-  }, [isOpen, room, selectedDate]);
+  }, [isOpen, room, selectedDate, currentDayHours]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -43,9 +70,50 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
     }
   }, [isOpen]);
 
+  const loadOperatingHours = async () => {
+    try {
+      const response = await axios.get(`/api/rooms/${room.id}/operating-hours`);
+      setOperatingHours(response.data);
+    } catch (err) {
+      console.error('Error loading operating hours:', err);
+      // Fallback to default hours if no operating hours configured
+      setOperatingHours([]);
+    }
+  };
+
+  const updateCurrentDayHours = () => {
+    const selectedDateObj = new Date(selectedDate + 'T00:00:00');
+    const dayNames = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    const dayOfWeek = dayNames[selectedDateObj.getDay()];
+
+    const dayHours = operatingHours.find(oh => oh.dayOfWeek === dayOfWeek);
+    if (!dayHours || !dayHours.isOpen) {
+      setCurrentDayHours({ start: 8, end: 22, isOpen: false });
+      return;
+    }
+
+    const startHour = dayHours.startTime ? parseInt(dayHours.startTime.split(':')[0]) : 8;
+    let endHour = dayHours.endTime ? parseInt(dayHours.endTime.split(':')[0]) : 22;
+
+    // Se endTime for 00:00 (meia-noite), tratar como 24 para o loop funcionar
+    if (endHour === 0) {
+      endHour = 24;
+    }
+
+    setCurrentDayHours({ start: startHour, end: endHour, isOpen: true });
+  };
+
   const loadAvailability = async () => {
     setLoading(true);
     setError('');
+
+    // Check if studio is closed on selected day
+    if (!currentDayHours.isOpen) {
+      setTimeSlots([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       // Get all reservations for the room and filter manually
       // TODO: Fix backend query to properly filter by date
@@ -67,7 +135,7 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
       });
 
       const slots: TimeSlot[] = [];
-      for (let hour = operatingHours.start; hour < operatingHours.end; hour++) {
+      for (let hour = currentDayHours.start; hour < currentDayHours.end; hour++) {
         // Create start and end time for current slot
         const slotStart = new Date(selectedDate);
         slotStart.setHours(hour, 0, 0, 0);
@@ -83,7 +151,6 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
           // Check overlap: (slotStart < reservationEnd) && (slotEnd > reservationStart)
           return slotStart < reservationEnd && slotEnd > reservationStart;
         });
-
         slots.push({
           hour,
           available: !conflictingReservation,
@@ -202,75 +269,83 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
           </div>
         ) : (
           <div>
-            <h6 className="mb-3">
-              Horários Disponíveis ({formatHour(operatingHours.start)} às {formatHour(operatingHours.end)}):
-            </h6>
-            <Row>
-              {timeSlots.map(slot => (
-                <Col xs="6" sm="4" md="3" key={slot.hour} className="mb-2">
-                  <Button
-                    color={selectedTimeSlots.includes(slot.hour) ? 'primary' : slot.available ? 'outline-success' : 'outline-danger'}
-                    size="sm"
-                    block
-                    disabled={!slot.available}
-                    onClick={() => toggleTimeSlot(slot.hour)}
-                    style={{ cursor: slot.available ? 'pointer' : 'not-allowed' }}
-                  >
-                    {formatHour(slot.hour)}
-                  </Button>
-                </Col>
-              ))}
-            </Row>
-
-            {selectedTimeSlots.length > 0 && (
+            {!currentDayHours.isOpen ? (
+              <Alert color="warning">
+                <FontAwesomeIcon icon="exclamation-triangle" /> Estúdio fechado neste dia
+              </Alert>
+            ) : (
               <>
-                <Alert color="info" className="mt-3">
-                  <strong>Resumo da Reserva:</strong>
-                  <br />
-                  Horários selecionados: {selectedTimeSlots.map(h => formatHour(h)).join(', ')}
-                  <br />
-                  Duração: {selectedTimeSlots.length} hora(s)
-                  <br />
-                  Valor total: R$ {(room?.hourlyRate * selectedTimeSlots.length)?.toFixed(2)}
-                </Alert>
-
-                <div className="mt-4 p-3 border rounded">
-                  <h6 className="mb-3">
-                    <FontAwesomeIcon icon="music" /> Informações Adicionais
-                  </h6>
-
-                  <Row>
-                    <Col md="6">
-                      <FormGroup>
-                        <Label for="artistName">Nome da Banda/Artista/Produtor</Label>
-                        <Input
-                          type="text"
-                          id="artistName"
-                          value={artistName}
-                          onChange={e => setArtistName(e.target.value)}
-                          placeholder="Ex: Banda XYZ, João Silva, etc."
-                          maxLength={255}
-                        />
-                        <small className="text-muted">Opcional - Quem irá usar a sala</small>
-                      </FormGroup>
+                <h6 className="mb-3">
+                  Horários Disponíveis ({formatHour(currentDayHours.start)} às {formatHour(currentDayHours.end)}):
+                </h6>
+                <Row>
+                  {timeSlots.map(slot => (
+                    <Col xs="6" sm="4" md="3" key={slot.hour} className="mb-2">
+                      <Button
+                        color={selectedTimeSlots.includes(slot.hour) ? 'primary' : slot.available ? 'outline-success' : 'outline-danger'}
+                        size="sm"
+                        block
+                        disabled={!slot.available}
+                        onClick={() => toggleTimeSlot(slot.hour)}
+                        style={{ cursor: slot.available ? 'pointer' : 'not-allowed' }}
+                      >
+                        {formatHour(slot.hour)}
+                      </Button>
                     </Col>
+                  ))}
+                </Row>
 
-                    <Col md="6">
-                      <FormGroup>
-                        <Label for="instruments">Instrumentos a serem utilizados</Label>
-                        <Input
-                          type="textarea"
-                          id="instruments"
-                          value={instruments}
-                          onChange={e => setInstruments(e.target.value)}
-                          placeholder="Ex: Guitarra, Bateria, Baixo, Vocal..."
-                          rows={3}
-                        />
-                        <small className="text-muted">Opcional - Liste os instrumentos que serão usados</small>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </div>
+                {selectedTimeSlots.length > 0 && (
+                  <>
+                    <Alert color="info" className="mt-3">
+                      <strong>Resumo da Reserva:</strong>
+                      <br />
+                      Horários selecionados: {selectedTimeSlots.map(h => formatHour(h)).join(', ')}
+                      <br />
+                      Duração: {selectedTimeSlots.length} hora(s)
+                      <br />
+                      Valor total: R$ {(room?.hourlyRate * selectedTimeSlots.length)?.toFixed(2)}
+                    </Alert>
+
+                    <div className="mt-4 p-3 border rounded">
+                      <h6 className="mb-3">
+                        <FontAwesomeIcon icon="music" /> Informações Adicionais
+                      </h6>
+
+                      <Row>
+                        <Col md="6">
+                          <FormGroup>
+                            <Label for="artistName">Nome da Banda/Artista/Produtor</Label>
+                            <Input
+                              type="text"
+                              id="artistName"
+                              value={artistName}
+                              onChange={e => setArtistName(e.target.value)}
+                              placeholder="Ex: Banda XYZ, João Silva, etc."
+                              maxLength={255}
+                            />
+                            <small className="text-muted">Opcional - Quem irá usar a sala</small>
+                          </FormGroup>
+                        </Col>
+
+                        <Col md="6">
+                          <FormGroup>
+                            <Label for="instruments">Instrumentos a serem utilizados</Label>
+                            <Input
+                              type="textarea"
+                              id="instruments"
+                              value={instruments}
+                              onChange={e => setInstruments(e.target.value)}
+                              placeholder="Ex: Guitarra, Bateria, Baixo, Vocal..."
+                              rows={3}
+                            />
+                            <small className="text-muted">Opcional - Liste os instrumentos que serão usados</small>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -280,7 +355,11 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
         <Button color="secondary" onClick={toggle}>
           Cancelar
         </Button>
-        <Button color="primary" onClick={handleConfirmReservation} disabled={selectedTimeSlots.length === 0 || loading}>
+        <Button
+          color="primary"
+          onClick={handleConfirmReservation}
+          disabled={selectedTimeSlots.length === 0 || loading || !currentDayHours.isOpen}
+        >
           <FontAwesomeIcon icon="check" /> Confirmar Reserva
         </Button>
       </ModalFooter>
