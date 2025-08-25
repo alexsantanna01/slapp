@@ -10,6 +10,7 @@ interface StudioEntityState extends EntityState<IStudio> {
   hasMore: boolean;
   loadingMore: boolean;
   pageSize: number;
+  lastId: number | null; // cursor
 }
 
 const initialState: StudioEntityState = {
@@ -24,6 +25,7 @@ const initialState: StudioEntityState = {
   hasMore: true,
   loadingMore: false,
   pageSize: 6,
+  lastId: null, // cursor inicial
 };
 
 const apiUrl = 'api/studios';
@@ -144,6 +146,36 @@ export const loadMoreStudios = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+// loadMoreStudios usando keyset pagination
+export const loadMoreStudiosKeyset = createAsyncThunk(
+  'studio/load_more_studios_key_set',
+  async ({ filters, lastId, pageSize = 6 }: { filters: any; lastId?: number; pageSize?: number }) => {
+    const params = new URLSearchParams();
+
+    if (lastId !== undefined && lastId !== null) {
+      params.append('lastId', lastId.toString()); // 👈 cursor
+    }
+    params.append('pageSize', pageSize.toString());
+
+    if (filters.name && filters.name.trim()) params.append('name', filters.name.trim());
+    if (filters.city && filters.city.trim()) params.append('city', filters.city.trim());
+    if (filters.roomType && filters.roomType.trim()) params.append('roomType', filters.roomType.trim());
+    if (filters.minPrice !== undefined && filters.minPrice >= 0) params.append('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice !== undefined && filters.maxPrice >= 0) params.append('maxPrice', filters.maxPrice.toString());
+
+    params.append('cacheBuster', new Date().getTime().toString());
+
+    const requestUrl = `${apiUrl}/keyset?${params.toString()}`;
+    const response = await axios.get<IStudio[]>(requestUrl);
+
+    return {
+      data: response.data,
+      lastId: response.data.length > 0 ? response.data[response.data.length - 1].id : lastId, // pega o último ID carregado
+    };
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const StudioSlice = createSlice({
@@ -177,11 +209,30 @@ export const StudioSlice = createSlice({
           hasMore: state.entities.length + data.length < totalItems,
         };
       })
+      .addCase(loadMoreStudiosKeyset.fulfilled, (state, action) => {
+        const { data, lastId } = action.payload;
+
+        return {
+          ...state,
+          loadingMore: false,
+          entities: [...state.entities, ...data], // acumula
+          lastId, // guarda o último id para próxima chamada
+          hasMore: data.length > 0, // se não voltou nada, acabou
+        };
+      })
       .addCase(loadMoreStudios.pending, state => {
         state.loadingMore = true;
         state.errorMessage = null;
       })
       .addCase(loadMoreStudios.rejected, (state, action) => {
+        state.loadingMore = false;
+        state.errorMessage = action.error.message;
+      })
+      .addCase(loadMoreStudiosKeyset.pending, state => {
+        state.loadingMore = true;
+        state.errorMessage = null;
+      })
+      .addCase(loadMoreStudiosKeyset.rejected, (state, action) => {
         state.loadingMore = false;
         state.errorMessage = action.error.message;
       })

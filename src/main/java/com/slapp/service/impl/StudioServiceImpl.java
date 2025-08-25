@@ -12,6 +12,7 @@ import com.slapp.service.dto.StudioDTO;
 import com.slapp.service.dto.StudioDetailDTO;
 import com.slapp.service.dto.StudioFilterDTO;
 import com.slapp.service.mapper.StudioMapper;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,6 +96,18 @@ public class StudioServiceImpl implements StudioService {
             filters.getMaxPrice(),
             pageable
         );
+    }
+
+    public List<StudioListProjection> findStudiosKeyset(
+        String name,
+        String city,
+        String roomType,
+        BigDecimal minPrice,
+        BigDecimal maxPrice,
+        Long lastId,
+        int pageSize
+    ) {
+        return studioRepository.getStudiosKeyset(name, city, roomType, minPrice, maxPrice, lastId, pageSize);
     }
 
     /**
