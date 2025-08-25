@@ -243,4 +243,18 @@ public class StudioResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
+
+    @GetMapping("/keyset")
+    public ResponseEntity<List<StudioListProjection>> getStudiosKeyset(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String city,
+        @RequestParam(required = false) String roomType,
+        @RequestParam(required = false) BigDecimal minPrice,
+        @RequestParam(required = false) BigDecimal maxPrice,
+        @RequestParam(required = false) Long lastId, // cursor
+        @RequestParam(defaultValue = "6") int pageSize // limite
+    ) {
+        List<StudioListProjection> studios = studioService.findStudiosKeyset(name, city, roomType, minPrice, maxPrice, lastId, pageSize);
+        return ResponseEntity.ok().body(studios);
+    }
 }

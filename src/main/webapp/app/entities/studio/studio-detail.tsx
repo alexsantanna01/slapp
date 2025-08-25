@@ -310,7 +310,7 @@ export const StudioDetail = () => {
                     ))}
                   </Row>
                   {/* Botões de Ação */}
-                  <Row className="d-flex justify-content-between w-100 w-100" style={{ marginTop: '1rem' }}>
+                  <Row className="d-flex justify-content-between" style={{ marginTop: '1rem' }}>
                     <Button tag={Link} to="/studio" replace className="button-slapp-voltar">
                       <FontAwesomeIcon icon="arrow-left" />{' '}
                       <span className="d-none d-md-inline">

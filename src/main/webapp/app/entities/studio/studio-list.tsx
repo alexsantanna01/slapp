@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router';
 // import { IStudioList } from 'app/shared/model/studioList.model';
 import { RoomType } from 'app/shared/model/enumerations/room-type.model';
 import { IStudio } from 'app/shared/model/studio.model';
+import { BottomNavigationAction } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 interface StudioListProps {
   estudioEntities: IStudio[];
@@ -67,7 +69,17 @@ const StudioList = (props: StudioListProps) => {
                   style={{ height: '200px', objectFit: 'cover' }}
                 />
                 <div className="position-absolute" style={{ top: '10px', right: '10px' }}>
-                  <Button
+                  <BottomNavigationAction
+                    label="Favorites"
+                    value="favorites"
+                    icon={<FavoriteIcon />}
+                    className="shadow-sm"
+                    onClick={e => {
+                      e.preventDefault();
+                      alert('Funcionalidade de favoritos será implementada!');
+                    }}
+                  />
+                  {/* <Button
                     color="light"
                     size="sm"
                     className="shadow-sm"
@@ -77,7 +89,7 @@ const StudioList = (props: StudioListProps) => {
                     }}
                   >
                     <i className="far fa-heart"></i>
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
 

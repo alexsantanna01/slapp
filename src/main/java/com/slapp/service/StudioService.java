@@ -4,6 +4,8 @@ import com.slapp.repository.projections.StudioDetailProjection;
 import com.slapp.repository.projections.StudioListProjection;
 import com.slapp.service.dto.StudioDTO;
 import com.slapp.service.dto.StudioFilterDTO;
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -56,4 +58,14 @@ public interface StudioService {
     Page<StudioListProjection> getStudioRoomPagination(Pageable pageable, StudioFilterDTO filters);
 
     Optional<StudioDetailProjection> getStudioDetail(Long id);
+
+    public List<StudioListProjection> findStudiosKeyset(
+        String name,
+        String city,
+        String roomType,
+        BigDecimal minPrice,
+        BigDecimal maxPrice,
+        Long lastId,
+        int pageSize
+    );
 }

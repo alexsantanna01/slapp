@@ -78,6 +78,54 @@ public interface StudioRepository extends JpaRepository<Studio, Long>, JpaSpecif
         Pageable pageable
     );
 
+    @Query(
+        value = """
+        SELECT DISTINCT
+            s.id,
+            s.name,
+            s.description,
+            s.address,
+            s.city,
+            s.state,
+            s.image,
+            (SELECT MIN(r2.hourly_rate)
+             FROM room r2
+             WHERE r2.studio_id = s.id AND r2.active = true) as minPrice,
+            (SELECT MAX(r2.hourly_rate)
+             FROM room r2
+             WHERE r2.studio_id = s.id AND r2.active = true) as maxPrice,
+            (SELECT COUNT(*)
+             FROM room r2
+             WHERE r2.studio_id = s.id AND r2.active = true) as roomCount
+        FROM studio s
+        INNER JOIN room r ON r.studio_id = s.id AND r.active = true
+        WHERE s.active = true
+          AND (:name IS NULL OR :name = '' OR UPPER(s.name) LIKE UPPER(CONCAT('%', :name, '%')))
+          AND (:city IS NULL OR :city = '' OR UPPER(s.city) LIKE UPPER(CONCAT('%', :city, '%')))
+          AND (:roomType IS NULL OR :roomType = '' OR
+                (:roomType = 'RECORDING' AND r.room_type = 'RECORDING') OR
+                (:roomType = 'REHEARSAL' AND r.room_type = 'REHEARSAL') OR
+                (:roomType = 'LIVE' AND r.room_type = 'LIVE') OR
+                (:roomType = 'MIXING' AND r.room_type = 'MIXING') OR
+                (:roomType = 'BOTH' AND r.room_type IN ('RECORDING', 'REHEARSAL', 'LIVE', 'MIXING')))
+          AND (:minPrice IS NULL OR r.hourly_rate >= :minPrice)
+          AND (:maxPrice IS NULL OR r.hourly_rate <= :maxPrice)
+          AND (:lastId IS NULL OR s.id > :lastId)   -- 👈 cursor
+        ORDER BY s.id
+        LIMIT :pageSize
+        """,
+        nativeQuery = true
+    )
+    List<StudioListProjection> getStudiosKeyset(
+        @Param("name") String name,
+        @Param("city") String city,
+        @Param("roomType") String roomType,
+        @Param("minPrice") BigDecimal minPrice,
+        @Param("maxPrice") BigDecimal maxPrice,
+        @Param("lastId") Long lastId,
+        @Param("pageSize") int pageSize
+    );
+
     /**
      * Busca os detalhes completos do Studio com Rooms e suas imagens
      *
