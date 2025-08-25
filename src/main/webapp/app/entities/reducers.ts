@@ -8,6 +8,7 @@ import review from 'app/entities/review/review.reducer';
 import specialPrice from 'app/entities/special-price/special-price.reducer';
 import availability from 'app/entities/availability/availability.reducer';
 import cancellationPolicy from 'app/entities/cancellation-policy/cancellation-policy.reducer';
+import favorite from 'app/entities/favorite/favorite.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 const entitiesReducers = {
@@ -21,6 +22,7 @@ const entitiesReducers = {
   specialPrice,
   availability,
   cancellationPolicy,
+  favorite,
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
 };
 

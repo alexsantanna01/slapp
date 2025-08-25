@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { Box, Typography, Grid } from '@mui/material';
 import { styled } from '@mui/system';
 
-import { getStudioPagination, loadMoreStudios, resetPagination } from 'app/entities/studio/studio.reducer';
+import { getStudioPagination, loadMoreStudiosKeyset as loadMoreStudios, resetPagination } from 'app/entities/studio/studio.reducer';
 import StudioSearch from './studio-search';
 import StudioList from './studio-list';
 
@@ -35,7 +35,7 @@ export const Studio = () => {
   const pageLocation = useLocation();
   const navigate = useNavigate();
   // Estados do Studio (com load more)
-  const { loadingMore, hasMore, currentPage, errorMessage } = useAppSelector(state => state.studio);
+  const { loadingMore, hasMore, currentPage, errorMessage, lastId } = useAppSelector(state => state.studio);
   const estudioEntities = useAppSelector(state => state.studio.entities);
   const loading = useAppSelector(state => state.studio.loading);
   const totalItems = useAppSelector(state => state.studio.totalItems);
@@ -46,9 +46,9 @@ export const Studio = () => {
   // Estado dummy para compatibilidade com StudioSearch
   const [page, setPage] = useState<number>(0);
 
-  const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
-  );
+  // const [paginationState, setPaginationState] = useState(
+  //   overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
+  // );
   const [filters, setFilters] = useState<ISearchFilters>({
     name: '',
     city: '',
@@ -95,12 +95,12 @@ export const Studio = () => {
       dispatch(
         loadMoreStudios({
           filters,
-          currentPage,
-          sort: 'name,asc',
+          lastId, // 👈 agora usa o cursor
+          pageSize: 6, // ou qualquer valor que você quiser fixar
         }),
       );
     }
-  }, [dispatch, filters, currentPage, loadingMore, hasMore, account]);
+  }, [dispatch, filters, lastId, loadingMore, hasMore, account]);
 
   // Effect para recarregar quando filtros mudam
   useEffect(() => {
@@ -117,29 +117,6 @@ export const Studio = () => {
   useEffect(() => {
     fetchStudios();
   }, []);
-
-  // useEffect(() => {
-  //   const params = new URLSearchParams(pageLocation.search);
-  //   const pages = params.get('pages');
-  //   const sort = params.get(SORT);
-  //   if (pages && sort) {
-  //     const sortSplit = sort.split(',');
-  //     setPaginationState({
-  //       ...paginationState,
-  //       activePage: +pages,
-  //       sort: sortSplit[0],
-  //       order: sortSplit[1],
-  //     });
-  //   }
-  // }, [pageLocation.search]);
-
-  const sort = p => () => {
-    setPaginationState({
-      ...paginationState,
-      order: paginationState.order === ASC ? DESC : ASC,
-      sort: p,
-    });
-  };
 
   return (
     <Container className="studio-page">

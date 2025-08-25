@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardImg, CardBody, CardTitle, CardText, Badge, Button, Row, Col, Spinner, Label } from 'reactstrap';
 import { useNavigate } from 'react-router';
 // import { IStudioList } from 'app/shared/model/studioList.model';
 import { RoomType } from 'app/shared/model/enumerations/room-type.model';
 import { IStudio } from 'app/shared/model/studio.model';
+import { BottomNavigationAction } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { toggleStudioFavorite, getUserFavoriteStudioIds } from 'app/entities/favorite/favorite.reducer';
 
 interface StudioListProps {
   estudioEntities: IStudio[];
@@ -16,6 +21,18 @@ interface StudioListProps {
 const StudioList = (props: StudioListProps) => {
   const { estudioEntities, totalItems, hasMore, loadingMore, onLoadMore } = props;
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  // Estados do Redux para favoritos
+  const { userFavoriteStudioIds, toggleLoading, loadingFavorites } = useAppSelector(state => state.favorite);
+  const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
+
+  // Carrega os favoritos do usuário quando o componente monta
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(getUserFavoriteStudioIds());
+    }
+  }, [dispatch, isAuthenticated]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -43,6 +60,22 @@ const StudioList = (props: StudioListProps) => {
     navigate(`/studio/${studioId}`);
   };
 
+  const handleFavoriteClick = (studioId: number, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!isAuthenticated) {
+      alert('Você precisa estar logado para favoritar um estúdio');
+      return;
+    }
+
+    dispatch(toggleStudioFavorite(studioId));
+  };
+
+  const isStudioFavorite = (studioId: number): boolean => {
+    return userFavoriteStudioIds.includes(studioId);
+  };
+
   return (
     <div className="studio-list">
       {/* Header com contador */}
@@ -67,17 +100,19 @@ const StudioList = (props: StudioListProps) => {
                   style={{ height: '200px', objectFit: 'cover' }}
                 />
                 <div className="position-absolute" style={{ top: '10px', right: '10px' }}>
-                  <Button
-                    color="light"
-                    size="sm"
+                  <BottomNavigationAction
+                    label={isStudioFavorite(studio.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                    value="favorites"
+                    icon={isStudioFavorite(studio.id) ? <FavoriteIcon style={{ color: '#ff4444' }} /> : <FavoriteBorderIcon />}
                     className="shadow-sm"
-                    onClick={e => {
-                      e.preventDefault();
-                      alert('Funcionalidade de favoritos será implementada!');
-                    }}
-                  >
-                    <i className="far fa-heart"></i>
-                  </Button>
+                    // style={{
+                    //   backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    //   borderRadius: '50%',
+                    //   transition: 'all 0.3s ease',
+                    // }}
+                    onClick={e => handleFavoriteClick(studio.id, e)}
+                    disabled={toggleLoading}
+                  />
                 </div>
               </div>
 

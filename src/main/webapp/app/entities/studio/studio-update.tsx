@@ -130,8 +130,32 @@ export const StudioUpdate = () => {
           cancellationPolicy: studioEntity?.cancellationPolicy?.id,
         };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div>
+      <div
+        style={{
+          backgroundImage: `linear-gradient(rgba(77, 52, 36, 0.6), rgba(77, 52, 36, 0.6)), url(${studioEntity.image})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          height: '400px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          textAlign: 'center',
+        }}
+      >
+        <div>
+          <h1 style={{ fontSize: '3.5rem', fontWeight: 'bold', marginBottom: '1rem', textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
+            {studioEntity.name}
+          </h1>
+          <p style={{ fontSize: '1.3rem', maxWidth: '600px', textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}>{studioEntity.description}</p>
+        </div>
+      </div>
       <Row className="justify-content-center">
         <Col md="8">
           <h2 id="slappApp.studio.home.createOrEditLabel" data-cy="StudioCreateUpdateHeading">
@@ -338,26 +362,20 @@ export const StudioUpdate = () => {
                   onOperatingHoursChange={setOperatingHours}
                 />
               </div>
-              <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/studio" replace color="info">
-                <FontAwesomeIcon icon="arrow-left" />
-                &nbsp;
-                <span className="d-none d-md-inline">
-                  <Translate contentKey="entity.action.back">Back</Translate>
-                </span>
-              </Button>
-              &nbsp;
-              <Button
-                color="primary"
-                id="save-entity"
-                data-cy="entityCreateSaveButton"
-                type="submit"
-                disabled={updating || operatingHoursSaving}
-              >
-                <FontAwesomeIcon icon="save" />
-                &nbsp;
-                <Translate contentKey="entity.action.save">Save</Translate>
-                {operatingHoursSaving && <FontAwesomeIcon icon="spinner" spin className="ms-2" />}
-              </Button>
+              <Row className="d-flex justify-content-between">
+                <Button onClick={handleBack} replace className="button-slapp-voltar">
+                  <FontAwesomeIcon icon="arrow-left" />{' '}
+                  <span className="d-none d-md-inline">
+                    <Translate contentKey="entity.action.back">Voltar</Translate>
+                  </span>
+                </Button>
+                <Button className="button-slapp-editar" type="submit" disabled={updating || operatingHoursSaving}>
+                  <FontAwesomeIcon icon="save" />{' '}
+                  <span className="d-none d-md-inline">
+                    <Translate contentKey="entity.action.save">Save</Translate>
+                  </span>
+                </Button>
+              </Row>
             </ValidatedForm>
           )}
         </Col>
