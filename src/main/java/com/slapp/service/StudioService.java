@@ -5,6 +5,7 @@ import com.slapp.repository.projections.StudioListProjection;
 import com.slapp.service.dto.StudioDTO;
 import com.slapp.service.dto.StudioFilterDTO;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -65,6 +66,8 @@ public interface StudioService {
         String roomType,
         BigDecimal minPrice,
         BigDecimal maxPrice,
+        LocalDateTime availabilityStartDateTime,
+        LocalDateTime availabilityEndDateTime,
         Long lastId,
         int pageSize
     );
