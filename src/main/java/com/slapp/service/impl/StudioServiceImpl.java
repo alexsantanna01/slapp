@@ -13,6 +13,9 @@ import com.slapp.service.dto.StudioDetailDTO;
 import com.slapp.service.dto.StudioFilterDTO;
 import com.slapp.service.mapper.StudioMapper;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -88,12 +91,30 @@ public class StudioServiceImpl implements StudioService {
 
     @Override
     public Page<StudioListProjection> getStudioRoomPagination(Pageable pageable, StudioFilterDTO filters) {
+        LOG.debug(
+            "getStudioRoomPagination called with filters: start={}, end={}",
+            filters.getAvailabilityStartDateTime(),
+            filters.getAvailabilityEndDateTime()
+        );
+
+        // Frontend já envia em UTC, não precisa converter
+        Instant startInstant = filters.getAvailabilityStartDateTime() != null
+            ? filters.getAvailabilityStartDateTime().atZone(ZoneId.of("UTC")).toInstant()
+            : null;
+        Instant endInstant = filters.getAvailabilityEndDateTime() != null
+            ? filters.getAvailabilityEndDateTime().atZone(ZoneId.of("UTC")).toInstant()
+            : null;
+
+        LOG.debug("Converted to Instants: start={}, end={}", startInstant, endInstant);
+
         return studioRepository.getStudioRoomPagination(
             filters.getName(),
             filters.getCity(),
             filters.getRoomType(),
             filters.getMinPrice(),
             filters.getMaxPrice(),
+            startInstant,
+            endInstant,
             pageable
         );
     }
@@ -104,10 +125,16 @@ public class StudioServiceImpl implements StudioService {
         String roomType,
         BigDecimal minPrice,
         BigDecimal maxPrice,
+        LocalDateTime availabilityStartDateTime,
+        LocalDateTime availabilityEndDateTime,
         Long lastId,
         int pageSize
     ) {
-        return studioRepository.getStudiosKeyset(name, city, roomType, minPrice, maxPrice, lastId, pageSize);
+        // Frontend já envia em UTC, não precisa converter
+        Instant startInstant = availabilityStartDateTime != null ? availabilityStartDateTime.atZone(ZoneId.of("UTC")).toInstant() : null;
+        Instant endInstant = availabilityEndDateTime != null ? availabilityEndDateTime.atZone(ZoneId.of("UTC")).toInstant() : null;
+
+        return studioRepository.getStudiosKeyset(name, city, roomType, minPrice, maxPrice, startInstant, endInstant, lastId, pageSize);
     }
 
     /**

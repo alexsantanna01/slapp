@@ -1,6 +1,7 @@
 package com.slapp.service.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class StudioFilterDTO {
 
@@ -9,17 +10,26 @@ public class StudioFilterDTO {
     private String roomType;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
-
-    // Construtor padrão
-    public StudioFilterDTO() {}
+    private LocalDateTime availabilityStartDateTime;
+    private LocalDateTime availabilityEndDateTime;
 
     // Construtor completo
-    public StudioFilterDTO(String name, String city, String roomType, BigDecimal minPrice, BigDecimal maxPrice) {
+    public StudioFilterDTO(
+        String name,
+        String city,
+        String roomType,
+        BigDecimal minPrice,
+        BigDecimal maxPrice,
+        LocalDateTime availabilityStartDateTime,
+        LocalDateTime availabilityEndDateTime
+    ) {
         this.name = name;
         this.city = city;
         this.roomType = roomType;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
+        this.availabilityStartDateTime = availabilityStartDateTime;
+        this.availabilityEndDateTime = availabilityEndDateTime;
     }
 
     // Getters
@@ -43,6 +53,14 @@ public class StudioFilterDTO {
         return maxPrice;
     }
 
+    public LocalDateTime getAvailabilityStartDateTime() {
+        return availabilityStartDateTime;
+    }
+
+    public LocalDateTime getAvailabilityEndDateTime() {
+        return availabilityEndDateTime;
+    }
+
     // Setters
     public void setName(String name) {
         this.name = name;
@@ -64,6 +82,14 @@ public class StudioFilterDTO {
         this.maxPrice = maxPrice;
     }
 
+    public void setAvailabilityStartDateTime(LocalDateTime availabilityStartDateTime) {
+        this.availabilityStartDateTime = availabilityStartDateTime;
+    }
+
+    public void setAvailabilityEndDateTime(LocalDateTime availabilityEndDateTime) {
+        this.availabilityEndDateTime = availabilityEndDateTime;
+    }
+
     // Métodos de validação
     public boolean hasNameFilter() {
         return name != null && !name.trim().isEmpty();
@@ -81,6 +107,10 @@ public class StudioFilterDTO {
         return minPrice != null || maxPrice != null;
     }
 
+    public boolean hasAvailabilityFilter() {
+        return availabilityStartDateTime != null && availabilityEndDateTime != null;
+    }
+
     // Builder pattern
     public static Builder builder() {
         return new Builder();
@@ -93,6 +123,8 @@ public class StudioFilterDTO {
         private String roomType;
         private BigDecimal minPrice;
         private BigDecimal maxPrice;
+        private LocalDateTime availabilityStartDateTime;
+        private LocalDateTime availabilityEndDateTime;
 
         public Builder name(String name) {
             this.name = name;
@@ -119,8 +151,18 @@ public class StudioFilterDTO {
             return this;
         }
 
+        public Builder availabilityStartDateTime(LocalDateTime availabilityStartDateTime) {
+            this.availabilityStartDateTime = availabilityStartDateTime;
+            return this;
+        }
+
+        public Builder availabilityEndDateTime(LocalDateTime availabilityEndDateTime) {
+            this.availabilityEndDateTime = availabilityEndDateTime;
+            return this;
+        }
+
         public StudioFilterDTO build() {
-            return new StudioFilterDTO(name, city, roomType, minPrice, maxPrice);
+            return new StudioFilterDTO(name, city, roomType, minPrice, maxPrice, availabilityStartDateTime, availabilityEndDateTime);
         }
     }
 }

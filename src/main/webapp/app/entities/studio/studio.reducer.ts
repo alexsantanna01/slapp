@@ -105,8 +105,20 @@ export const getStudioPagination = createAsyncThunk(
     if (filters.name && filters.name.trim()) params.append('name', filters.name.trim());
     if (filters.city && filters.city.trim()) params.append('city', filters.city.trim());
     if (filters.roomType && filters.roomType.trim()) params.append('roomType', filters.roomType.trim());
-    if (filters.minPrice !== undefined && filters.minPrice >= 0) params.append('minPrice', filters.minPrice.toString());
-    if (filters.maxPrice !== undefined && filters.maxPrice >= 0) params.append('maxPrice', filters.maxPrice.toString());
+    if (filters.minPrice !== undefined && filters.minPrice !== null && filters.minPrice >= 0)
+      params.append('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice !== undefined && filters.maxPrice !== null && filters.maxPrice >= 0)
+      params.append('maxPrice', filters.maxPrice.toString());
+
+    // 🚀 novos campos ISO - tratando como UTC direto
+    if (filters.availabilityStartDateTime?.trim()) {
+      const startDateTime = filters.availabilityStartDateTime.trim();
+      params.append('availabilityStartDateTime', startDateTime.endsWith('Z') ? startDateTime : `${startDateTime}.000Z`);
+    }
+    if (filters.availabilityEndDateTime?.trim()) {
+      const endDateTime = filters.availabilityEndDateTime.trim();
+      params.append('availabilityEndDateTime', endDateTime.endsWith('Z') ? endDateTime : `${endDateTime}.000Z`);
+    }
 
     params.append('cacheBuster', new Date().getTime().toString());
 
@@ -116,22 +128,35 @@ export const getStudioPagination = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
-// Nova action para carregar mais
+/**
+ * Load more (offset pagination)
+ */
 export const loadMoreStudios = createAsyncThunk(
   'studio/load_more_studios',
   async ({ filters, currentPage, sort = 'name,asc' }: { filters: any; currentPage: number; sort?: string }) => {
     const params = new URLSearchParams();
 
-    const nextPage = currentPage + 1;
+    const nextPage = (currentPage || 0) + 1;
     params.append('page', nextPage.toString());
-    params.append('size', '6'); // Carrega mais 6 itens
+    params.append('size', '6');
     params.append('sort', sort);
 
-    if (filters.name && filters.name.trim()) params.append('name', filters.name.trim());
-    if (filters.city && filters.city.trim()) params.append('city', filters.city.trim());
-    if (filters.roomType && filters.roomType.trim()) params.append('roomType', filters.roomType.trim());
-    if (filters.minPrice !== undefined && filters.minPrice >= 0) params.append('minPrice', filters.minPrice.toString());
-    if (filters.maxPrice !== undefined && filters.maxPrice >= 0) params.append('maxPrice', filters.maxPrice.toString());
+    if (filters.name?.trim()) params.append('name', filters.name.trim());
+    if (filters.city?.trim()) params.append('city', filters.city.trim());
+    if (filters.roomType?.trim()) params.append('roomType', filters.roomType.trim());
+    if (filters.minPrice !== undefined && filters.minPrice !== null && filters.minPrice >= 0)
+      params.append('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice !== undefined && filters.maxPrice !== null && filters.maxPrice >= 0)
+      params.append('maxPrice', filters.maxPrice.toString());
+
+    if (filters.availabilityStartDateTime?.trim()) {
+      const startDateTime = filters.availabilityStartDateTime.trim();
+      params.append('availabilityStartDateTime', startDateTime.endsWith('Z') ? startDateTime : `${startDateTime}.000Z`);
+    }
+    if (filters.availabilityEndDateTime?.trim()) {
+      const endDateTime = filters.availabilityEndDateTime.trim();
+      params.append('availabilityEndDateTime', endDateTime.endsWith('Z') ? endDateTime : `${endDateTime}.000Z`);
+    }
 
     params.append('cacheBuster', new Date().getTime().toString());
 
@@ -146,31 +171,45 @@ export const loadMoreStudios = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
-// loadMoreStudios usando keyset pagination
+/**
+ * Load more (keyset pagination)
+ */
 export const loadMoreStudiosKeyset = createAsyncThunk(
-  'studio/load_more_studios_key_set',
-  async ({ filters, lastId, pageSize = 6 }: { filters: any; lastId?: number; pageSize?: number }) => {
+  'studio/load_more_studios_keyset',
+  async ({ filters, currentPage, sort = 'name,asc' }: { filters: any; currentPage: number; sort?: string }) => {
     const params = new URLSearchParams();
 
-    if (lastId !== undefined && lastId !== null) {
-      params.append('lastId', lastId.toString()); // 👈 cursor
-    }
-    params.append('pageSize', pageSize.toString());
+    const nextPage = (currentPage || 0) + 1;
+    params.append('page', nextPage.toString());
+    params.append('size', '6');
+    params.append('sort', sort);
 
-    if (filters.name && filters.name.trim()) params.append('name', filters.name.trim());
-    if (filters.city && filters.city.trim()) params.append('city', filters.city.trim());
-    if (filters.roomType && filters.roomType.trim()) params.append('roomType', filters.roomType.trim());
-    if (filters.minPrice !== undefined && filters.minPrice >= 0) params.append('minPrice', filters.minPrice.toString());
-    if (filters.maxPrice !== undefined && filters.maxPrice >= 0) params.append('maxPrice', filters.maxPrice.toString());
+    if (filters.name?.trim()) params.append('name', filters.name.trim());
+    if (filters.city?.trim()) params.append('city', filters.city.trim());
+    if (filters.roomType?.trim()) params.append('roomType', filters.roomType.trim());
+    if (filters.minPrice !== undefined && filters.minPrice !== null && filters.minPrice >= 0)
+      params.append('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice !== undefined && filters.maxPrice !== null && filters.maxPrice >= 0)
+      params.append('maxPrice', filters.maxPrice.toString());
+
+    if (filters.availabilityStartDateTime?.trim()) {
+      const startDateTime = filters.availabilityStartDateTime.trim();
+      params.append('availabilityStartDateTime', startDateTime.endsWith('Z') ? startDateTime : `${startDateTime}.000Z`);
+    }
+    if (filters.availabilityEndDateTime?.trim()) {
+      const endDateTime = filters.availabilityEndDateTime.trim();
+      params.append('availabilityEndDateTime', endDateTime.endsWith('Z') ? endDateTime : `${endDateTime}.000Z`);
+    }
 
     params.append('cacheBuster', new Date().getTime().toString());
 
-    const requestUrl = `${apiUrl}/keyset?${params.toString()}`;
+    const requestUrl = `${apiUrl}/pagination?${params.toString()}`;
     const response = await axios.get<IStudio[]>(requestUrl);
 
     return {
       data: response.data,
-      lastId: response.data.length > 0 ? response.data[response.data.length - 1].id : lastId, // pega o último ID carregado
+      headers: response.headers,
+      nextPage,
     };
   },
   { serializeError: serializeAxiosError },
@@ -210,14 +249,17 @@ export const StudioSlice = createSlice({
         };
       })
       .addCase(loadMoreStudiosKeyset.fulfilled, (state, action) => {
-        const { data, lastId } = action.payload;
+        const { data, headers, nextPage } = action.payload;
+        const totalItems = parseInt(headers['x-total-count'], 10);
+        const newEntities = [...state.entities, ...data];
 
         return {
           ...state,
           loadingMore: false,
-          entities: [...state.entities, ...data], // acumula
-          lastId, // guarda o último id para próxima chamada
-          hasMore: data.length > 0, // se não voltou nada, acabou
+          entities: newEntities,
+          totalItems,
+          currentPage: nextPage,
+          hasMore: newEntities.length < totalItems,
         };
       })
       .addCase(loadMoreStudios.pending, state => {

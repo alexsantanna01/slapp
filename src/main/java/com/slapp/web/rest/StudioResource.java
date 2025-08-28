@@ -14,7 +14,10 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -22,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -228,7 +232,9 @@ public class StudioResource {
         @RequestParam(required = false) String city,
         @RequestParam(required = false) String roomType,
         @RequestParam(required = false) BigDecimal minPrice,
-        @RequestParam(required = false) BigDecimal maxPrice
+        @RequestParam(required = false) BigDecimal maxPrice,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime availabilityStartDateTime,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime availabilityEndDateTime
     ) {
         StudioFilterDTO filters = StudioFilterDTO.builder()
             .name(name)
@@ -236,14 +242,18 @@ public class StudioResource {
             .roomType(roomType)
             .minPrice(minPrice)
             .maxPrice(maxPrice)
+            .availabilityStartDateTime(availabilityStartDateTime)
+            .availabilityEndDateTime(availabilityEndDateTime)
             .build();
 
-        final Page<StudioListProjection> page = studioService.getStudioRoomPagination(pageable, filters);
-
+        final var page = studioService.getStudioRoomPagination(pageable, filters);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
+    /**
+     * {@code GET  } : get studios with keyset pagination.
+     */
     @GetMapping("/keyset")
     public ResponseEntity<List<StudioListProjection>> getStudiosKeyset(
         @RequestParam(required = false) String name,
@@ -251,10 +261,38 @@ public class StudioResource {
         @RequestParam(required = false) String roomType,
         @RequestParam(required = false) BigDecimal minPrice,
         @RequestParam(required = false) BigDecimal maxPrice,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime availabilityStartDateTime,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime availabilityEndDateTime,
         @RequestParam(required = false) Long lastId, // cursor
         @RequestParam(defaultValue = "6") int pageSize // limite
     ) {
-        List<StudioListProjection> studios = studioService.findStudiosKeyset(name, city, roomType, minPrice, maxPrice, lastId, pageSize);
+        List<StudioListProjection> studios = studioService.findStudiosKeyset(
+            name,
+            city,
+            roomType,
+            minPrice,
+            maxPrice,
+            availabilityStartDateTime,
+            availabilityEndDateTime,
+            lastId,
+            pageSize
+        );
         return ResponseEntity.ok().body(studios);
+    }
+
+    /**
+     * Debug endpoint to check conflicting reservations
+     */
+    @GetMapping("/debug/conflicting-reservations")
+    public ResponseEntity<List<Object[]>> getConflictingReservations(
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime availabilityStartDateTime,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime availabilityEndDateTime
+    ) {
+        // Frontend já envia em UTC, não precisa converter
+        java.time.Instant startInstant = availabilityStartDateTime.atZone(java.time.ZoneId.of("UTC")).toInstant();
+        java.time.Instant endInstant = availabilityEndDateTime.atZone(java.time.ZoneId.of("UTC")).toInstant();
+
+        List<Object[]> conflicts = studioRepository.findConflictingReservations(startInstant, endInstant);
+        return ResponseEntity.ok().body(conflicts);
     }
 }

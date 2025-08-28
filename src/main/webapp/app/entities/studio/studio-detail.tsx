@@ -38,7 +38,6 @@ export const StudioDetail = () => {
 
   useEffect(() => {
     if (reservationUpdateSuccess) {
-      toast.success('Reserva criada com sucesso!');
       setReservationModalOpen(false);
       setSelectedRoom(null);
       // dispatch(resetReservation());
