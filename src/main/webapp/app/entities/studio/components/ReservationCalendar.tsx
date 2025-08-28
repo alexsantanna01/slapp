@@ -119,29 +119,28 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
       // TODO: Fix backend query to properly filter by date
       const allReservationsResponse = await axios.get(`/api/reservations/room/${room.id}/all`);
 
-      // Filter reservations for the selected date
-      const selectedDateObj = new Date(selectedDate);
+      // Filter reservations for the selected date (usando UTC para consistência)
+      const selectedDateUTC = new Date(`${selectedDate}T00:00:00.000Z`);
+      const nextDayUTC = new Date(`${selectedDate}T23:59:59.999Z`);
+
       const reservations = allReservationsResponse.data.filter((res: any) => {
-        const reservationDate = new Date(res.startDateTime);
-        const isSameDate =
-          reservationDate.getFullYear() === selectedDateObj.getFullYear() &&
-          reservationDate.getMonth() === selectedDateObj.getMonth() &&
-          reservationDate.getDate() === selectedDateObj.getDate();
+        const reservationStart = new Date(res.startDateTime);
+        const reservationEnd = new Date(res.endDateTime);
+
+        // Verifica se a reserva tem alguma sobreposição com o dia selecionado
+        const hasOverlap = reservationStart <= nextDayUTC && reservationEnd >= selectedDateUTC;
 
         // Only include active reservations
         const isActive = ['PENDING', 'CONFIRMED', 'IN_PROGRESS'].includes(res.status);
 
-        return isSameDate && isActive;
+        return hasOverlap && isActive;
       });
 
       const slots: TimeSlot[] = [];
       for (let hour = currentDayHours.start; hour < currentDayHours.end; hour++) {
-        // Create start and end time for current slot
-        const slotStart = new Date(selectedDate);
-        slotStart.setHours(hour, 0, 0, 0);
-
-        const slotEnd = new Date(selectedDate);
-        slotEnd.setHours(hour + 1, 0, 0, 0);
+        // Create start and end time for current slot in UTC
+        const slotStart = new Date(`${selectedDate}T${hour.toString().padStart(2, '0')}:00:00.000Z`);
+        const slotEnd = new Date(`${selectedDate}T${(hour + 1).toString().padStart(2, '0')}:00:00.000Z`);
 
         // Check if there's a conflict with any reservation
         const conflictingReservation = reservations.find((res: any) => {
@@ -189,11 +188,9 @@ export const ReservationCalendar: React.FC<ReservationCalendarProps> = ({ isOpen
     const startHour = Math.min(...selectedTimeSlots);
     const endHour = Math.max(...selectedTimeSlots) + 1;
 
-    const startDateTime = new Date(selectedDate);
-    startDateTime.setHours(startHour, 0, 0, 0);
-
-    const endDateTime = new Date(selectedDate);
-    endDateTime.setHours(endHour, 0, 0, 0);
+    // Criar datas em UTC para evitar problemas de timezone
+    const startDateTime = new Date(`${selectedDate}T${startHour.toString().padStart(2, '0')}:00:00.000Z`);
+    const endDateTime = new Date(`${selectedDate}T${endHour.toString().padStart(2, '0')}:00:00.000Z`);
 
     const duration = selectedTimeSlots.length;
     const totalPrice = room.hourlyRate * duration;

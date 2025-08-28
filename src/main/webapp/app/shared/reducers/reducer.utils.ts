@@ -19,6 +19,8 @@ export interface IStudioFilters {
   roomType?: string; // 'RECORDING' | 'REHEARSAL' | 'BOTH'
   minPrice?: number;
   maxPrice?: number;
+  availabilityStartDateTime?: string; // novo
+  availabilityEndDateTime?: string; // novo
 }
 
 /**

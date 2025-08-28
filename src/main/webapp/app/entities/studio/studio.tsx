@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Col, Container, Label, Row } from 'reactstrap';
-import { getPaginationState } from 'react-jhipster';
-import { ASC, DESC, ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
-import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { Box, Typography, Grid } from '@mui/material';
 import { styled } from '@mui/system';
@@ -95,12 +92,11 @@ export const Studio = () => {
       dispatch(
         loadMoreStudios({
           filters,
-          lastId, // 👈 agora usa o cursor
-          pageSize: 6, // ou qualquer valor que você quiser fixar
+          currentPage, // 👈 agora usa offset pagination normal
         }),
       );
     }
-  }, [dispatch, filters, lastId, loadingMore, hasMore, account]);
+  }, [dispatch, filters, currentPage, loadingMore, hasMore, account]);
 
   // Effect para recarregar quando filtros mudam
   useEffect(() => {
