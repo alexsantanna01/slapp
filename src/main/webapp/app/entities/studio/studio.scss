@@ -46,14 +46,30 @@
 }
 
 .button-slapp {
-  background: var(--wood-brown);
-  color: white;
+  background: var(--wood-brown) !important;
+  color: white !important;
   border: none;
   border-radius: 5px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 
   &:hover {
-    background: var(--wood-light);
+    background: var(--wood-light) !important;
+  }
+}
+
+.input-slapp {
+  border: 1px solid var(--wood-brown);
+  background-color: transparent;
+  border-radius: 5px;
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 300px;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    border-color: var(--gold-primary);
+    outline: none;
+    box-shadow: 0 0 5px var(--gold-primary);
   }
 }
 
