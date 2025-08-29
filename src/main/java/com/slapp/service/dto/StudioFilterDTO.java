@@ -12,6 +12,7 @@ public class StudioFilterDTO {
     private BigDecimal maxPrice;
     private LocalDateTime availabilityStartDateTime;
     private LocalDateTime availabilityEndDateTime;
+    private Boolean onlyFavorites;
 
     // Construtor completo
     public StudioFilterDTO(
@@ -21,7 +22,8 @@ public class StudioFilterDTO {
         BigDecimal minPrice,
         BigDecimal maxPrice,
         LocalDateTime availabilityStartDateTime,
-        LocalDateTime availabilityEndDateTime
+        LocalDateTime availabilityEndDateTime,
+        Boolean onlyFavorites
     ) {
         this.name = name;
         this.city = city;
@@ -30,6 +32,7 @@ public class StudioFilterDTO {
         this.maxPrice = maxPrice;
         this.availabilityStartDateTime = availabilityStartDateTime;
         this.availabilityEndDateTime = availabilityEndDateTime;
+        this.onlyFavorites = onlyFavorites;
     }
 
     // Getters
@@ -61,6 +64,10 @@ public class StudioFilterDTO {
         return availabilityEndDateTime;
     }
 
+    public Boolean getOnlyFavorites() {
+        return onlyFavorites;
+    }
+
     // Setters
     public void setName(String name) {
         this.name = name;
@@ -90,6 +97,10 @@ public class StudioFilterDTO {
         this.availabilityEndDateTime = availabilityEndDateTime;
     }
 
+    public void setOnlyFavorites(Boolean onlyFavorites) {
+        this.onlyFavorites = onlyFavorites;
+    }
+
     // Métodos de validação
     public boolean hasNameFilter() {
         return name != null && !name.trim().isEmpty();
@@ -111,6 +122,10 @@ public class StudioFilterDTO {
         return availabilityStartDateTime != null && availabilityEndDateTime != null;
     }
 
+    public boolean hasOnlyFavoritesFilter() {
+        return onlyFavorites != null && onlyFavorites;
+    }
+
     // Builder pattern
     public static Builder builder() {
         return new Builder();
@@ -125,6 +140,7 @@ public class StudioFilterDTO {
         private BigDecimal maxPrice;
         private LocalDateTime availabilityStartDateTime;
         private LocalDateTime availabilityEndDateTime;
+        private Boolean onlyFavorites;
 
         public Builder name(String name) {
             this.name = name;
@@ -161,8 +177,22 @@ public class StudioFilterDTO {
             return this;
         }
 
+        public Builder onlyFavorites(Boolean onlyFavorites) {
+            this.onlyFavorites = onlyFavorites;
+            return this;
+        }
+
         public StudioFilterDTO build() {
-            return new StudioFilterDTO(name, city, roomType, minPrice, maxPrice, availabilityStartDateTime, availabilityEndDateTime);
+            return new StudioFilterDTO(
+                name,
+                city,
+                roomType,
+                minPrice,
+                maxPrice,
+                availabilityStartDateTime,
+                availabilityEndDateTime,
+                onlyFavorites
+            );
         }
     }
 }
