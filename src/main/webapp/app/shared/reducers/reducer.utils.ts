@@ -21,6 +21,7 @@ export interface IStudioFilters {
   maxPrice?: number;
   availabilityStartDateTime?: string; // novo
   availabilityEndDateTime?: string; // novo
+  onlyFavorites?: boolean; // filtro para mostrar apenas favoritos
 }
 
 /**
