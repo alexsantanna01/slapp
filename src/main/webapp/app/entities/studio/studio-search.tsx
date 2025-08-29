@@ -22,6 +22,7 @@ interface ISearchFilters {
   maxPrice?: number;
   availabilityStartDateTime?: string; // novo
   availabilityEndDateTime?: string; // novo
+  onlyFavorites?: boolean; // filtro para mostrar apenas favoritos
 }
 
 interface StudioSearchProps {
@@ -45,6 +46,7 @@ const StudioSearch = (props: StudioSearchProps) => {
     sort: 'name,asc',
     availabilityStartDateTime: '',
     availabilityEndDateTime: '',
+    onlyFavorites: false,
   });
   const [showExtraFilters, setShowExtraFilters] = useState(false);
 
@@ -59,7 +61,8 @@ const StudioSearch = (props: StudioSearchProps) => {
       pesquisa.size === 6 &&
       pesquisa.sort === 'name,asc' &&
       pesquisa.availabilityStartDateTime === '' &&
-      pesquisa.availabilityEndDateTime === ''
+      pesquisa.availabilityEndDateTime === '' &&
+      pesquisa.onlyFavorites === false
     ) {
       setFilters({ ...pesquisa });
     }
@@ -85,11 +88,22 @@ const StudioSearch = (props: StudioSearchProps) => {
       sort: 'name,asc',
       availabilityStartDateTime: '',
       availabilityEndDateTime: '',
+      onlyFavorites: false,
     });
   };
 
   const addFiltros = () => {
     setShowExtraFilters(!showExtraFilters);
+  };
+
+  const handleFavoritesFilter = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newFilters = { ...pesquisa, onlyFavorites: true };
+    setPesquisa(newFilters);
+    setFilters(prev => ({
+      ...prev,
+      ...newFilters,
+    }));
   };
 
   // 🔹 Handlers para juntar data e hora em availabilityStartDateTime e availabilityEndDateTime
@@ -182,9 +196,9 @@ const StudioSearch = (props: StudioSearchProps) => {
             <Col md={2} style={{ marginTop: '2rem' }}>
               <Button
                 variant="contained"
-                type="submit"
+                onClick={handleFavoritesFilter}
                 startIcon={<FavoriteIcon />}
-                className="button-slapp search-button"
+                className={`button-slapp search-button ${pesquisa.onlyFavorites ? 'active' : ''}`}
                 style={{ width: '100%' }}
               >
                 Favoritos

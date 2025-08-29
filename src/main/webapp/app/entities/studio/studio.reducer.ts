@@ -120,6 +120,11 @@ export const getStudioPagination = createAsyncThunk(
       params.append('availabilityEndDateTime', endDateTime.endsWith('Z') ? endDateTime : `${endDateTime}.000Z`);
     }
 
+    // Filtro de favoritos
+    if (filters.onlyFavorites === true) {
+      params.append('onlyFavorites', 'true');
+    }
+
     params.append('cacheBuster', new Date().getTime().toString());
 
     const requestUrl = `${apiUrl}/pagination?${params.toString()}`;
@@ -156,6 +161,11 @@ export const loadMoreStudios = createAsyncThunk(
     if (filters.availabilityEndDateTime?.trim()) {
       const endDateTime = filters.availabilityEndDateTime.trim();
       params.append('availabilityEndDateTime', endDateTime.endsWith('Z') ? endDateTime : `${endDateTime}.000Z`);
+    }
+
+    // Filtro de favoritos
+    if (filters.onlyFavorites === true) {
+      params.append('onlyFavorites', 'true');
     }
 
     params.append('cacheBuster', new Date().getTime().toString());
@@ -199,6 +209,11 @@ export const loadMoreStudiosKeyset = createAsyncThunk(
     if (filters.availabilityEndDateTime?.trim()) {
       const endDateTime = filters.availabilityEndDateTime.trim();
       params.append('availabilityEndDateTime', endDateTime.endsWith('Z') ? endDateTime : `${endDateTime}.000Z`);
+    }
+
+    // Filtro de favoritos
+    if (filters.onlyFavorites === true) {
+      params.append('onlyFavorites', 'true');
     }
 
     params.append('cacheBuster', new Date().getTime().toString());
