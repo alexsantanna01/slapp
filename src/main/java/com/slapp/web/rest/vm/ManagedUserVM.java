@@ -1,6 +1,8 @@
 package com.slapp.web.rest.vm;
 
+import com.slapp.domain.enumeration.UserType;
 import com.slapp.service.dto.AdminUserDTO;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -15,6 +17,11 @@ public class ManagedUserVM extends AdminUserDTO {
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
     private String password;
 
+    @NotNull
+    private UserType userType;
+
+    private String phoneNumber;
+
     public ManagedUserVM() {
         // Empty constructor needed for Jackson.
     }
@@ -27,9 +34,25 @@ public class ManagedUserVM extends AdminUserDTO {
         this.password = password;
     }
 
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     // prettier-ignore
     @Override
     public String toString() {
-        return "ManagedUserVM{" + super.toString() + "} ";
+        return "ManagedUserVM{" + super.toString() + ", userType=" + userType + ", phoneNumber=" + phoneNumber + "} ";
     }
 }
