@@ -1,9 +1,15 @@
 // src/main/webapp/app/modules/home/studio-search.tsx
 import React, { useEffect, useState } from 'react';
-import { Card, CardBody, Form, FormGroup, Label, Input, Button, Row, Col } from 'reactstrap';
+import { Card, CardBody, Form, FormGroup, Label, Input, Row, Col } from 'reactstrap';
+import Button from '@mui/material/Button';
+import SearchIcon from '@mui/icons-material/Search';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import './studio.scss';
 import { RoomType } from 'app/shared/model/enumerations/room-type.model';
-import { toast } from 'react-toastify';
+import { FormControl, InputLabel, OutlinedInput } from '@mui/material';
 
 interface ISearchFilters {
   page?: number;
@@ -16,6 +22,7 @@ interface ISearchFilters {
   maxPrice?: number;
   availabilityStartDateTime?: string; // novo
   availabilityEndDateTime?: string; // novo
+  onlyFavorites?: boolean; // filtro para mostrar apenas favoritos
 }
 
 interface StudioSearchProps {
@@ -39,6 +46,7 @@ const StudioSearch = (props: StudioSearchProps) => {
     sort: 'name,asc',
     availabilityStartDateTime: '',
     availabilityEndDateTime: '',
+    onlyFavorites: false,
   });
   const [showExtraFilters, setShowExtraFilters] = useState(false);
 
@@ -53,7 +61,8 @@ const StudioSearch = (props: StudioSearchProps) => {
       pesquisa.size === 6 &&
       pesquisa.sort === 'name,asc' &&
       pesquisa.availabilityStartDateTime === '' &&
-      pesquisa.availabilityEndDateTime === ''
+      pesquisa.availabilityEndDateTime === '' &&
+      pesquisa.onlyFavorites === false
     ) {
       setFilters({ ...pesquisa });
     }
@@ -79,11 +88,22 @@ const StudioSearch = (props: StudioSearchProps) => {
       sort: 'name,asc',
       availabilityStartDateTime: '',
       availabilityEndDateTime: '',
+      onlyFavorites: false,
     });
   };
 
   const addFiltros = () => {
     setShowExtraFilters(!showExtraFilters);
+  };
+
+  const handleFavoritesFilter = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newFilters = { ...pesquisa, onlyFavorites: true };
+    setPesquisa(newFilters);
+    setFilters(prev => ({
+      ...prev,
+      ...newFilters,
+    }));
   };
 
   // 🔹 Handlers para juntar data e hora em availabilityStartDateTime e availabilityEndDateTime
@@ -127,83 +147,113 @@ const StudioSearch = (props: StudioSearchProps) => {
               <FormGroup>
                 <Label for="availabilityDate">Data Desejada</Label>
                 <Input
-                  type="date"
+                  inline
                   id="availabilityDate"
+                  type="date"
                   value={pesquisa.availabilityStartDateTime?.split('T')[0] || ''}
                   onChange={e => handleDateChange(e.target.value)}
+                  className="input-slapp"
                 />
               </FormGroup>
             </Col>
-            <Col md={2}>
+            <Col md={1}>
               <FormGroup>
-                <Label for="availabilityStartTime">Horário Início</Label>
+                <Label for="availabilityStartTime">Início</Label>
                 <Input
                   type="time"
                   id="availabilityStartTime"
                   value={pesquisa.availabilityStartDateTime?.split('T')[1]?.slice(0, 5) || ''}
                   onChange={e => handleStartTimeChange(e.target.value)}
+                  className="input-slapp"
+                  style={{ width: '100%' }}
                 />
               </FormGroup>
             </Col>
-            <Col md={2}>
+            <Col md={1}>
               <FormGroup>
-                <Label for="availabilityEndTime">Horário Fim</Label>
+                <Label for="availabilityEndTime">Fim</Label>
                 <Input
                   type="time"
                   id="availabilityEndTime"
                   value={pesquisa.availabilityEndDateTime?.split('T')[1]?.slice(0, 5) || ''}
                   onChange={e => handleEndTimeChange(e.target.value)}
+                  style={{ width: '100%' }}
+                  className="input-slapp"
                 />
               </FormGroup>
             </Col>
-            <Col md={2}>
-              <FormGroup>
-                <Label for="name">Estudio</Label>
-                <Input
-                  type="text"
-                  id="name"
-                  placeholder="Digite o nome do studio..."
-                  value={pesquisa.name}
-                  onChange={e => setPesquisa({ ...pesquisa, name: e.target.value })}
-                />
-              </FormGroup>
+            <Col md={2} style={{ marginTop: '2rem' }}>
+              <Button
+                variant="contained"
+                type="submit"
+                startIcon={<SearchIcon />}
+                className="button-slapp search-button"
+                style={{ width: '100%' }}
+              >
+                Buscar
+              </Button>
             </Col>
-
-            <Col md={1}>
-              <FormGroup>
-                <Label>&nbsp;</Label>
-                <div>
-                  <Button type="submit" className="button-slapp search-button" block>
-                    <i className="fas fa-search"></i> Buscar
-                  </Button>
-                </div>
-              </FormGroup>
+            <Col md={2} style={{ marginTop: '2rem' }}>
+              <Button
+                variant="contained"
+                onClick={handleFavoritesFilter}
+                startIcon={<FavoriteIcon />}
+                className={`button-slapp search-button ${pesquisa.onlyFavorites ? 'active' : ''}`}
+                style={{ width: '100%' }}
+              >
+                Favoritos
+              </Button>
             </Col>
-            <Col md={1}>
-              <FormGroup>
-                <Label>&nbsp;</Label>
-                <div>
-                  <Button onClick={clearFilters} className="button-slapp search-button" block>
-                    <i className="fas fa-search"></i> Limpar
-                  </Button>
-                </div>
-              </FormGroup>
+            <Col md={2} style={{ marginTop: '2rem' }}>
+              {!showExtraFilters ? (
+                <Button
+                  variant="contained"
+                  onClick={addFiltros}
+                  className="button-slapp search-button"
+                  style={{ width: '100%' }}
+                  startIcon={<AddCircleOutlineIcon />}
+                >
+                  FILTROS
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  onClick={addFiltros}
+                  className="button-slapp search-button"
+                  style={{ width: '100%' }}
+                  startIcon={<RemoveCircleOutlineIcon />}
+                >
+                  FILTROS
+                </Button>
+              )}
             </Col>
-            <Col md={2}>
-              <FormGroup>
-                <Label>&nbsp;</Label>
-                <div>
-                  <Button onClick={addFiltros} className="button-slapp search-button" block>
-                    <i className={showExtraFilters ? 'fas fa-minus' : 'fas fa-plus'}></i>
-                    {showExtraFilters ? '- Filtros' : '+ Filtros'}
-                  </Button>
-                </div>
-              </FormGroup>
+            <Col md={2} style={{ marginTop: '2rem' }}>
+              <Button
+                onClick={clearFilters}
+                className="button-slapp search-button"
+                startIcon={<CleaningServicesIcon />}
+                style={{ width: '100%' }}
+              >
+                Limpar
+              </Button>
             </Col>
           </Row>
           {/* Filtros avançados - opcional */}
           {showExtraFilters && (
             <Row>
+              <Col md={2}>
+                <FormGroup>
+                  <Label for="name">Estúdio</Label>
+                  <Input
+                    type="text"
+                    id="name"
+                    placeholder="Digite o nome do studio..."
+                    value={pesquisa.name}
+                    onChange={e => setPesquisa({ ...pesquisa, name: e.target.value })}
+                    className="input-slapp"
+                  />
+                </FormGroup>
+              </Col>
               <Col md={2}>
                 <FormGroup>
                   <Label for="city">Cidade</Label>
@@ -213,6 +263,7 @@ const StudioSearch = (props: StudioSearchProps) => {
                     placeholder="Digite sua cidade..."
                     value={pesquisa.city}
                     onChange={e => setPesquisa({ ...pesquisa, city: e.target.value })}
+                    className="input-slapp"
                   />
                 </FormGroup>
               </Col>
@@ -225,6 +276,7 @@ const StudioSearch = (props: StudioSearchProps) => {
                     id="roomType"
                     value={pesquisa.roomType}
                     onChange={e => setPesquisa({ ...pesquisa, roomType: e.target.value as RoomType })}
+                    className="input-slapp"
                   >
                     <option value="">Todos os tipos</option>
                     <option value={RoomType.RECORDING}>Gravação</option>
@@ -245,6 +297,7 @@ const StudioSearch = (props: StudioSearchProps) => {
                         placeholder="Min"
                         value={pesquisa.minPrice}
                         onChange={e => setPesquisa({ ...pesquisa, minPrice: Number(e.target.value) })}
+                        className="input-slapp"
                       />
                     </Col>
                     <Col>
@@ -253,6 +306,7 @@ const StudioSearch = (props: StudioSearchProps) => {
                         placeholder="Max"
                         value={pesquisa.maxPrice}
                         onChange={e => setPesquisa({ ...pesquisa, maxPrice: Number(e.target.value) })}
+                        className="input-slapp"
                       />
                     </Col>
                   </Row>

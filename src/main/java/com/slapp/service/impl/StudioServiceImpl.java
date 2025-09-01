@@ -115,6 +115,7 @@ public class StudioServiceImpl implements StudioService {
             filters.getMaxPrice(),
             startInstant,
             endInstant,
+            filters.getOnlyFavorites(),
             pageable
         );
     }

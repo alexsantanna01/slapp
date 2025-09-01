@@ -159,6 +159,102 @@ public interface StudioRepository extends JpaRepository<Studio, Long>, JpaSpecif
         Pageable pageable
     );
 
+    // Query básica para favoritos (sem filtros de disponibilidade)
+    @Query(
+        value = """
+        SELECT DISTINCT
+            s.id,
+            s.name,
+            s.description,
+            s.address,
+            s.city,
+            s.state,
+            s.image,
+            MIN(r.hourly_rate) as min_price,
+            MAX(r.hourly_rate) as max_price,
+            AVG(CAST(rv.rating AS DECIMAL(3,2))) as average_rating,
+            COUNT(rv.id) as review_count
+        FROM studio s
+        INNER JOIN room r ON s.id = r.studio_id
+        INNER JOIN favorite f ON s.id = f.studio_id
+        INNER JOIN user_profile up ON f.user_id = up.user_id
+        INNER JOIN jhi_user u ON up.user_id = u.id
+        LEFT JOIN review rv ON s.id = rv.studio_id
+        WHERE s.active = true
+        AND u.login = :#{authentication.name}
+        AND (:name IS NULL OR :name = '' OR UPPER(s.name) LIKE UPPER(CONCAT('%', :name, '%')))
+        AND (:city IS NULL OR :city = '' OR UPPER(s.city) LIKE UPPER(CONCAT('%', :city, '%')))
+        AND (:roomType IS NULL OR :roomType = '' OR r.room_type = :roomType)
+        AND (:minPrice IS NULL OR r.hourly_rate >= :minPrice)
+        AND (:maxPrice IS NULL OR r.hourly_rate <= :maxPrice)
+        GROUP BY s.id, s.name, s.description, s.address, s.city, s.state, s.image
+        ORDER BY s.name
+        """,
+        nativeQuery = true
+    )
+    Page<StudioListProjection> getStudioRoomPaginationFavoritesBasic(
+        @Param("name") String name,
+        @Param("city") String city,
+        @Param("roomType") String roomType,
+        @Param("minPrice") BigDecimal minPrice,
+        @Param("maxPrice") BigDecimal maxPrice,
+        Pageable pageable
+    );
+
+    // Query com favoritos e disponibilidade
+    @Query(
+        value = """
+        SELECT DISTINCT
+            s.id,
+            s.name,
+            s.description,
+            s.address,
+            s.city,
+            s.state,
+            s.image,
+            MIN(r.hourly_rate) as min_price,
+            MAX(r.hourly_rate) as max_price,
+            AVG(CAST(rv.rating AS DECIMAL(3,2))) as average_rating,
+            COUNT(rv.id) as review_count
+        FROM studio s
+        INNER JOIN room r ON s.id = r.studio_id
+        INNER JOIN favorite f ON s.id = f.studio_id
+        INNER JOIN user_profile up ON f.user_id = up.user_id
+        INNER JOIN jhi_user u ON up.user_id = u.id
+        LEFT JOIN review rv ON s.id = rv.studio_id
+        WHERE s.active = true
+        AND u.login = :#{authentication.name}
+        AND (:name IS NULL OR :name = '' OR UPPER(s.name) LIKE UPPER(CONCAT('%', :name, '%')))
+        AND (:city IS NULL OR :city = '' OR UPPER(s.city) LIKE UPPER(CONCAT('%', :city, '%')))
+        AND (:roomType IS NULL OR :roomType = '' OR r.room_type = :roomType)
+        AND (:minPrice IS NULL OR r.hourly_rate >= :minPrice)
+        AND (:maxPrice IS NULL OR r.hourly_rate <= :maxPrice)
+        AND r.id NOT IN (
+            SELECT res.room_id
+            FROM reservation res
+            WHERE res.status IN ('PENDING', 'CONFIRMED', 'IN_PROGRESS')
+            AND (
+                (res.start_date_time <= :availabilityStartDateTime AND res.end_date_time > :availabilityStartDateTime)
+                OR (res.start_date_time < :availabilityEndDateTime AND res.end_date_time >= :availabilityEndDateTime)
+                OR (res.start_date_time >= :availabilityStartDateTime AND res.end_date_time <= :availabilityEndDateTime)
+            )
+        )
+        GROUP BY s.id, s.name, s.description, s.address, s.city, s.state, s.image
+        ORDER BY s.name
+        """,
+        nativeQuery = true
+    )
+    Page<StudioListProjection> getStudioRoomPaginationFavoritesWithAvailability(
+        @Param("name") String name,
+        @Param("city") String city,
+        @Param("roomType") String roomType,
+        @Param("minPrice") BigDecimal minPrice,
+        @Param("maxPrice") BigDecimal maxPrice,
+        @Param("availabilityStartDateTime") Instant availabilityStartDateTime,
+        @Param("availabilityEndDateTime") Instant availabilityEndDateTime,
+        Pageable pageable
+    );
+
     // Método de conveniência que escolhe a query apropriada
     default Page<StudioListProjection> getStudioRoomPagination(
         String name,
@@ -168,14 +264,35 @@ public interface StudioRepository extends JpaRepository<Studio, Long>, JpaSpecif
         BigDecimal maxPrice,
         Instant availabilityStartDateTime,
         Instant availabilityEndDateTime,
+        Boolean onlyFavorites,
         Pageable pageable
     ) {
         org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StudioRepository.class);
         LOG.debug(
-            "StudioRepository.getStudioRoomPagination: availabilityStart={}, availabilityEnd={}",
+            "StudioRepository.getStudioRoomPagination: availabilityStart={}, availabilityEnd={}, onlyFavorites={}",
             availabilityStartDateTime,
-            availabilityEndDateTime
+            availabilityEndDateTime,
+            onlyFavorites
         );
+
+        // Se onlyFavorites é true, usar query específica de favoritos
+        if (onlyFavorites != null && onlyFavorites) {
+            LOG.debug("Using favorite studios filter - this requires authenticated user");
+            if (availabilityStartDateTime != null && availabilityEndDateTime != null) {
+                return getStudioRoomPaginationFavoritesWithAvailability(
+                    name,
+                    city,
+                    roomType,
+                    minPrice,
+                    maxPrice,
+                    availabilityStartDateTime,
+                    availabilityEndDateTime,
+                    pageable
+                );
+            } else {
+                return getStudioRoomPaginationFavoritesBasic(name, city, roomType, minPrice, maxPrice, pageable);
+            }
+        }
 
         if (availabilityStartDateTime != null && availabilityEndDateTime != null) {
             LOG.debug("Using getStudioRoomPaginationWithAvailability");

@@ -234,7 +234,8 @@ public class StudioResource {
         @RequestParam(required = false) BigDecimal minPrice,
         @RequestParam(required = false) BigDecimal maxPrice,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime availabilityStartDateTime,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime availabilityEndDateTime
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime availabilityEndDateTime,
+        @RequestParam(required = false) Boolean onlyFavorites
     ) {
         StudioFilterDTO filters = StudioFilterDTO.builder()
             .name(name)
@@ -244,6 +245,7 @@ public class StudioResource {
             .maxPrice(maxPrice)
             .availabilityStartDateTime(availabilityStartDateTime)
             .availabilityEndDateTime(availabilityEndDateTime)
+            .onlyFavorites(onlyFavorites)
             .build();
 
         final var page = studioService.getStudioRoomPagination(pageable, filters);
