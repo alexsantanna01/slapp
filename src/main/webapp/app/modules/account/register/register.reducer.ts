@@ -25,6 +25,8 @@ export const handleRegister = createAsyncThunk(
     firstName: string;
     lastName: string;
     activated: boolean;
+    userType: string;
+    phoneNumber: string;
   }) => axios.post<any>('api/register', data),
   { serializeError: serializeAxiosError },
 );

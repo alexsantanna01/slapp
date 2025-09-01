@@ -147,7 +147,6 @@ const StudioSearch = (props: StudioSearchProps) => {
               <FormGroup>
                 <Label for="availabilityDate">Data Desejada</Label>
                 <Input
-                  inline
                   id="availabilityDate"
                   type="date"
                   value={pesquisa.availabilityStartDateTime?.split('T')[0] || ''}

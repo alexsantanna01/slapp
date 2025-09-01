@@ -192,9 +192,7 @@ export const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      // Por enquanto, enviamos apenas os campos aceitos pelo handleRegister atual
-      // Os campos adicionais (firstName, lastName, userType, phoneNumber) podem
-      // ser enviados em uma chamada posterior ou o reducer pode ser expandido
+      // Enviando todos os campos incluindo userType e phoneNumber
       dispatch(
         handleRegister({
           login: formData.email,
@@ -204,12 +202,10 @@ export const RegisterPage = () => {
           firstName: formData.firstName,
           lastName: formData.lastName,
           activated: true,
+          userType: formData.userType,
+          phoneNumber: formData.phoneNumber,
         }),
       );
-
-      // TODO: Implementar envio dos campos adicionais:
-      // - userType: formData.userType
-      // - phoneNumber: formData.phoneNumber
     } finally {
       setIsLoading(false);
     }
