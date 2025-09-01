@@ -61,7 +61,8 @@ public class AccountResource {
             throw new InvalidPasswordException();
         }
         User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
-        mailService.sendActivationEmail(user);
+        // TODO: Reativar quando implementar fluxo de ativação por email
+        // mailService.sendActivationEmail(user);
     }
 
     /**

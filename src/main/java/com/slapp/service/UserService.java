@@ -3,12 +3,14 @@ package com.slapp.service;
 import com.slapp.config.Constants;
 import com.slapp.domain.Authority;
 import com.slapp.domain.User;
+import com.slapp.domain.enumeration.UserType;
 import com.slapp.repository.AuthorityRepository;
 import com.slapp.repository.UserRepository;
 import com.slapp.security.AuthoritiesConstants;
 import com.slapp.security.SecurityUtils;
 import com.slapp.service.dto.AdminUserDTO;
 import com.slapp.service.dto.UserDTO;
+import com.slapp.web.rest.vm.ManagedUserVM;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -122,9 +124,10 @@ public class UserService {
         }
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
-        // new user is not active
-        newUser.setActivated(false);
-        // new user gets registration key
+        // TODO: Implementar fluxo de ativação por email no futuro
+        // Por enquanto, novos usuários são ativados automaticamente
+        newUser.setActivated(true);
+        // new user gets registration key (será usado quando implementar ativação por email)
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
@@ -132,6 +135,56 @@ public class UserService {
         userRepository.save(newUser);
         this.clearUserCaches(newUser);
         LOG.debug("Created Information for User: {}", newUser);
+        return newUser;
+    }
+
+    public User registerUser(ManagedUserVM managedUserVM, String password) {
+        userRepository
+            .findOneByLogin(managedUserVM.getLogin().toLowerCase())
+            .ifPresent(existingUser -> {
+                boolean removed = removeNonActivatedUser(existingUser);
+                if (!removed) {
+                    throw new UsernameAlreadyUsedException();
+                }
+            });
+        userRepository
+            .findOneByEmailIgnoreCase(managedUserVM.getEmail())
+            .ifPresent(existingUser -> {
+                boolean removed = removeNonActivatedUser(existingUser);
+                if (!removed) {
+                    throw new EmailAlreadyUsedException();
+                }
+            });
+        User newUser = new User();
+        String encryptedPassword = passwordEncoder.encode(password);
+        newUser.setLogin(managedUserVM.getLogin().toLowerCase());
+        newUser.setPassword(encryptedPassword);
+        newUser.setFirstName(managedUserVM.getFirstName());
+        newUser.setLastName(managedUserVM.getLastName());
+        if (managedUserVM.getEmail() != null) {
+            newUser.setEmail(managedUserVM.getEmail().toLowerCase());
+        }
+        newUser.setImageUrl(managedUserVM.getImageUrl());
+        newUser.setLangKey(managedUserVM.getLangKey());
+        newUser.setActivated(true);
+        newUser.setActivationKey(RandomUtil.generateActivationKey());
+
+        // Define as authorities baseado no userType
+        Set<Authority> authorities = new HashSet<>();
+        // Todos os usuários têm a role USER
+        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+
+        // Adiciona a role específica baseada no userType
+        if (managedUserVM.getUserType() == UserType.CUSTOMER) {
+            authorityRepository.findById(AuthoritiesConstants.CUSTOMER).ifPresent(authorities::add);
+        } else if (managedUserVM.getUserType() == UserType.STUDIO_OWNER) {
+            authorityRepository.findById(AuthoritiesConstants.STUDIO_OWNER).ifPresent(authorities::add);
+        }
+
+        newUser.setAuthorities(authorities);
+        userRepository.save(newUser);
+        this.clearUserCaches(newUser);
+        LOG.debug("Created Information for User: {} with authorities: {}", newUser, authorities);
         return newUser;
     }
 

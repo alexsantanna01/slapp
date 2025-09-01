@@ -9,12 +9,15 @@ export const Logout = () => {
 
   useLayoutEffect(() => {
     dispatch(logout());
-    if (authentication.logoutUrl) {
-      window.location.href = authentication.logoutUrl;
-    } else if (!authentication.isAuthenticated) {
-      window.location.href = '/';
-    }
-  });
+
+    setTimeout(() => {
+      if (authentication.logoutUrl) {
+        window.location.href = authentication.logoutUrl;
+      } else {
+        window.location.href = '/';
+      }
+    }, 5000);
+  }, []);
 
   return (
     <div className="p-5">
