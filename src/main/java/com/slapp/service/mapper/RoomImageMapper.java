@@ -14,8 +14,16 @@ public interface RoomImageMapper extends EntityMapper<RoomImageDTO, RoomImage> {
     @Mapping(target = "room", source = "room", qualifiedByName = "roomId")
     RoomImageDTO toDto(RoomImage s);
 
+    @Mapping(target = "room", source = "room", qualifiedByName = "roomFromId")
+    RoomImage toEntity(RoomImageDTO roomImageDTO);
+
     @Named("roomId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     RoomDTO toDtoRoomId(Room room);
+
+    @Named("roomFromId")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    Room toEntityRoomFromId(RoomDTO roomDTO);
 }

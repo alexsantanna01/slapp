@@ -1,7 +1,9 @@
 package com.slapp.service.impl;
 
+import com.slapp.domain.Room;
 import com.slapp.domain.RoomImage;
 import com.slapp.repository.RoomImageRepository;
+import com.slapp.repository.RoomRepository;
 import com.slapp.service.RoomImageService;
 import com.slapp.service.dto.RoomImageDTO;
 import com.slapp.service.mapper.RoomImageMapper;
@@ -25,27 +27,76 @@ public class RoomImageServiceImpl implements RoomImageService {
 
     private final RoomImageRepository roomImageRepository;
 
+    private final RoomRepository roomRepository;
+
     private final RoomImageMapper roomImageMapper;
 
-    public RoomImageServiceImpl(RoomImageRepository roomImageRepository, RoomImageMapper roomImageMapper) {
+    public RoomImageServiceImpl(RoomImageRepository roomImageRepository, RoomRepository roomRepository, RoomImageMapper roomImageMapper) {
         this.roomImageRepository = roomImageRepository;
+        this.roomRepository = roomRepository;
         this.roomImageMapper = roomImageMapper;
     }
 
     @Override
     public RoomImageDTO save(RoomImageDTO roomImageDTO) {
         LOG.debug("Request to save RoomImage : {}", roomImageDTO);
-        RoomImage roomImage = roomImageMapper.toEntity(roomImageDTO);
-        roomImage = roomImageRepository.save(roomImage);
-        return roomImageMapper.toDto(roomImage);
+        try {
+            // Validar se o room foi informado
+            if (roomImageDTO.getRoom() == null || roomImageDTO.getRoom().getId() == null) {
+                throw new RuntimeException("Room ID is required");
+            }
+
+            RoomImage roomImage = roomImageMapper.toEntity(roomImageDTO);
+
+            // Garantir que o Room seja uma entidade gerenciada
+            if (roomImage.getRoom() != null && roomImage.getRoom().getId() != null) {
+                final Long roomId = roomImage.getRoom().getId();
+                Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+                roomImage.setRoom(room);
+            } else {
+                // Fallback: usar o ID do DTO se o mapper não funcionou
+                final Long roomId = roomImageDTO.getRoom().getId();
+                Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+                roomImage.setRoom(room);
+            }
+
+            roomImage = roomImageRepository.save(roomImage);
+            return roomImageMapper.toDto(roomImage);
+        } catch (Exception e) {
+            LOG.error(
+                "Exception in save() with cause = '{}' and exception = '{}'",
+                e.getCause() != null ? e.getCause() : "NULL",
+                e.getMessage(),
+                e
+            );
+            throw e;
+        }
     }
 
     @Override
     public RoomImageDTO update(RoomImageDTO roomImageDTO) {
         LOG.debug("Request to update RoomImage : {}", roomImageDTO);
-        RoomImage roomImage = roomImageMapper.toEntity(roomImageDTO);
-        roomImage = roomImageRepository.save(roomImage);
-        return roomImageMapper.toDto(roomImage);
+        try {
+            RoomImage roomImage = roomImageMapper.toEntity(roomImageDTO);
+
+            // Se o room está vindo com apenas o ID, buscar do banco
+            if (roomImage.getRoom() != null && roomImage.getRoom().getId() != null) {
+                final Long roomId = roomImage.getRoom().getId();
+                Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+                roomImage.setRoom(room);
+            }
+
+            roomImage = roomImageRepository.save(roomImage);
+            return roomImageMapper.toDto(roomImage);
+        } catch (Exception e) {
+            LOG.error(
+                "Exception in update() with cause = '{}' and exception = '{}'",
+                e.getCause() != null ? e.getCause() : "NULL",
+                e.getMessage(),
+                e
+            );
+            throw e;
+        }
     }
 
     @Override
@@ -56,6 +107,15 @@ public class RoomImageServiceImpl implements RoomImageService {
             .findById(roomImageDTO.getId())
             .map(existingRoomImage -> {
                 roomImageMapper.partialUpdate(existingRoomImage, roomImageDTO);
+
+                // Se o room está vindo com apenas o ID, buscar do banco
+                if (existingRoomImage.getRoom() != null && existingRoomImage.getRoom().getId() != null) {
+                    final Long roomId = existingRoomImage.getRoom().getId();
+                    Room room = roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+                    existingRoomImage.setRoom(room);
+                }
 
                 return existingRoomImage;
             })
