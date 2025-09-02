@@ -142,4 +142,14 @@ public class RoomImageServiceImpl implements RoomImageService {
         LOG.debug("Request to delete RoomImage : {}", id);
         roomImageRepository.deleteById(id);
     }
+
+    @Override
+    public List<RoomImageDTO> findByRoomId(Long roomId) {
+        LOG.debug("Request to get all RoomImages for Room : {}", roomId);
+        return roomImageRepository
+            .findByRoomIdOrderByDisplayOrderAsc(roomId)
+            .stream()
+            .map(roomImageMapper::toDto)
+            .collect(Collectors.toList());
+    }
 }
