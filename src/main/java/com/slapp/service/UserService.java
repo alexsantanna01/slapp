@@ -3,8 +3,10 @@ package com.slapp.service;
 import com.slapp.config.Constants;
 import com.slapp.domain.Authority;
 import com.slapp.domain.User;
+import com.slapp.domain.UserProfile;
 import com.slapp.domain.enumeration.UserType;
 import com.slapp.repository.AuthorityRepository;
+import com.slapp.repository.UserProfileRepository;
 import com.slapp.repository.UserRepository;
 import com.slapp.security.AuthoritiesConstants;
 import com.slapp.security.SecurityUtils;
@@ -41,17 +43,21 @@ public class UserService {
 
     private final AuthorityRepository authorityRepository;
 
+    private final UserProfileRepository userProfileRepository;
+
     private final CacheManager cacheManager;
 
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
+        UserProfileRepository userProfileRepository,
         CacheManager cacheManager
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
+        this.userProfileRepository = userProfileRepository;
         this.cacheManager = cacheManager;
     }
 
@@ -183,8 +189,18 @@ public class UserService {
 
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
+
+        // Criar UserProfile automaticamente
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUser(newUser);
+        userProfile.setUserType(managedUserVM.getUserType());
+        userProfile.setPhone(managedUserVM.getPhoneNumber());
+        userProfile.setCreatedAt(Instant.now());
+        userProfile.setUpdatedAt(Instant.now());
+        userProfileRepository.save(userProfile);
+
         this.clearUserCaches(newUser);
-        LOG.debug("Created Information for User: {} with authorities: {}", newUser, authorities);
+        LOG.debug("Created Information for User: {} with authorities: {} and UserProfile: {}", newUser, authorities, userProfile);
         return newUser;
     }
 
