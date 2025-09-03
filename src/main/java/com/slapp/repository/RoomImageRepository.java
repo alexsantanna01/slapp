@@ -1,6 +1,7 @@
 package com.slapp.repository;
 
 import com.slapp.domain.RoomImage;
+import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface RoomImageRepository extends JpaRepository<RoomImage, Long> {}
+public interface RoomImageRepository extends JpaRepository<RoomImage, Long> {
+    List<RoomImage> findByRoomIdOrderByDisplayOrderAsc(Long roomId);
+}

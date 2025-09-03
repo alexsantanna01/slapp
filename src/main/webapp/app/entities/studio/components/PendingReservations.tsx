@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { APP_DATE_FORMAT } from 'app/config/constants';
 
 interface PendingReservationsProps {
-  studioId: number;
+  studioId: string;
   isOwner: boolean;
 }
 
