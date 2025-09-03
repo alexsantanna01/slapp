@@ -4,6 +4,13 @@ import { cleanEntity } from 'app/shared/util/entity-utils';
 import { EntityState, IQueryParams, IQueryParamsStudio, createEntitySlice, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
 import { IStudio, defaultValue } from 'app/shared/model/studio.model';
 
+// Interface para estatísticas do proprietário
+export interface IOwnerStats {
+  totalReservations: number;
+  monthlyRevenue: number;
+  occupancyRate: number;
+}
+
 // Interface estendida para suportar load more
 interface StudioEntityState extends EntityState<IStudio> {
   currentPage: number;
@@ -11,6 +18,8 @@ interface StudioEntityState extends EntityState<IStudio> {
   loadingMore: boolean;
   pageSize: number;
   lastId: number | null; // cursor
+  ownerStats: IOwnerStats | null;
+  ownerStatsLoading: boolean;
 }
 
 const initialState: StudioEntityState = {
@@ -26,6 +35,8 @@ const initialState: StudioEntityState = {
   loadingMore: false,
   pageSize: 6,
   lastId: null, // cursor inicial
+  ownerStats: null,
+  ownerStatsLoading: false,
 };
 
 const apiUrl = 'api/studios';
@@ -230,6 +241,16 @@ export const loadMoreStudiosKeyset = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+// Action para buscar estatísticas do proprietário
+export const getOwnerStats = createAsyncThunk(
+  'studio/fetch_owner_stats',
+  async (ownerId: number) => {
+    const requestUrl = `api/owner-stats/${ownerId}/current-month`;
+    return axios.get<IOwnerStats>(requestUrl);
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const StudioSlice = createSlice({
@@ -246,6 +267,10 @@ export const StudioSlice = createSlice({
       state.currentPage = 0;
       state.hasMore = true;
       state.loadingMore = false;
+    },
+    resetOwnerStats(state) {
+      state.ownerStats = null;
+      state.ownerStatsLoading = false;
     },
   },
   extraReducers(builder) {
@@ -302,6 +327,18 @@ export const StudioSlice = createSlice({
         state.updateSuccess = true;
         state.entity = {};
       })
+      .addCase(getOwnerStats.pending, state => {
+        state.ownerStatsLoading = true;
+        state.errorMessage = null;
+      })
+      .addCase(getOwnerStats.fulfilled, (state, action) => {
+        state.ownerStatsLoading = false;
+        state.ownerStats = action.payload.data;
+      })
+      .addCase(getOwnerStats.rejected, (state, action) => {
+        state.ownerStatsLoading = false;
+        state.errorMessage = action.error.message;
+      })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data, headers } = action.payload;
 
@@ -331,7 +368,7 @@ export const StudioSlice = createSlice({
   },
 });
 
-export const { reset, resetPagination } = StudioSlice.actions;
+export const { reset, resetPagination, resetOwnerStats } = StudioSlice.actions;
 
 // Reducer
 export default StudioSlice.reducer;
