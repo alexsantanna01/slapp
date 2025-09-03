@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
-import { Card, CardImg, CardBody, CardTitle, CardText, Badge, Button, Row, Col, Spinner, Label } from 'reactstrap';
+import { Card, CardImg, CardBody, CardTitle, CardText, Badge, Row, Col, Spinner, Label } from 'reactstrap';
 import { useNavigate } from 'react-router';
 // import { IStudioList } from 'app/shared/model/studioList.model';
 import { RoomType } from 'app/shared/model/enumerations/room-type.model';
 import { IStudio } from 'app/shared/model/studio.model';
-import { BottomNavigationAction } from '@mui/material';
+import { BottomNavigationAction, Button, CardActions, IconButton } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { toggleStudioFavorite, getUserFavoriteStudioIds } from 'app/entities/favorite/favorite.reducer';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 interface StudioListProps {
   estudioEntities: IStudio[];
@@ -99,17 +100,12 @@ const StudioList = (props: StudioListProps) => {
                   className="studio-image"
                   style={{ height: '200px', objectFit: 'cover' }}
                 />
-                <div className="position-absolute" style={{ top: '10px', right: '10px' }}>
+                <div className="position-absolute" style={{ top: '5px', right: '5px' }}>
                   <BottomNavigationAction
                     label={isStudioFavorite(studio.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                     value="favorites"
                     icon={isStudioFavorite(studio.id) ? <FavoriteIcon style={{ color: '#ff4444' }} /> : <FavoriteBorderIcon />}
                     className="shadow-sm"
-                    // style={{
-                    //   backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    //   borderRadius: '50%',
-                    //   transition: 'all 0.3s ease',
-                    // }}
                     onClick={e => handleFavoriteClick(studio.id, e)}
                     disabled={toggleLoading}
                   />
@@ -122,14 +118,6 @@ const StudioList = (props: StudioListProps) => {
                   <CardTitle tag="h5" className="studio-name mb-1">
                     {studio?.name}
                   </CardTitle>
-                  {/* <div className="studio-rating">
-                    <Label className="mr-1" color="primary">
-                      {studio?.averageRating || 0} precision={0.1} 
-                    </Label>
-                    <span className="rating-text ml-2 small text-muted">
-                      {studio.averageRating?.toFixed(1) || '0.0'} ({studio?.reviewCount || 0} avaliações)
-                    </span>
-                  </div> */}
                 </div>
 
                 {/* Localização */}
@@ -146,7 +134,6 @@ const StudioList = (props: StudioListProps) => {
                     ? `${studio.description.substring(0, 120)}...`
                     : studio.description || 'Sem descrição disponível'}
                 </CardText>
-
                 {/* Footer com preço e ação */}
                 <div className="studio-footer mt-auto">
                   <div className="d-flex justify-content-between align-items-center">
@@ -155,7 +142,12 @@ const StudioList = (props: StudioListProps) => {
                       <strong className="price-value">{formatPrice(studio?.minPrice || 0)}</strong>
                       <small className="price-unit text-muted d-block">por hora</small>
                     </div>
-                    <Button color="primary" size="sm" onClick={() => handleStudioClick(studio?.id?.toString())} className="button-slapp">
+                    <Button
+                      startIcon={<VisibilityIcon />}
+                      onClick={() => handleStudioClick(studio?.id?.toString())}
+                      className="button-slapp"
+                      variant="contained"
+                    >
                       Detalhes
                     </Button>
                   </div>
@@ -171,7 +163,7 @@ const StudioList = (props: StudioListProps) => {
         <div className="studio-pagination mt-4">
           <div className="text-center">
             {hasMore ? (
-              <Button className="button-slapp-straped" onClick={onLoadMore} disabled={loadingMore} size="lg">
+              <Button variant="outlined" className="button-slapp-straped" onClick={onLoadMore} disabled={loadingMore}>
                 {loadingMore ? (
                   <>
                     <Spinner size="sm" className="mr-2" />

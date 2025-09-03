@@ -39,7 +39,7 @@ const customStyles = `
   --background-input: #fdf9f1;
   --background-card: #fdfcf8;
   --disabled: #8b8b8b;
-  --text-button-primary: #ffffff;
+  --text-button-primary: #1A1A1A;
 }
 `;
 
