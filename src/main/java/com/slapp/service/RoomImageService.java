@@ -53,4 +53,6 @@ public interface RoomImageService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    List<RoomImageDTO> findByRoomId(Long roomId);
 }

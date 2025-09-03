@@ -27,6 +27,15 @@ export const getEntities = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const getEntitiesByRoom = createAsyncThunk(
+  'roomImage/fetch_entities_by_room',
+  async (roomId: string | number) => {
+    const requestUrl = `${apiUrl}?roomId.equals=${roomId}&sort=displayOrder,asc&cacheBuster=${new Date().getTime()}`;
+    return axios.get<IRoomImage[]>(requestUrl);
+  },
+  { serializeError: serializeAxiosError },
+);
+
 export const getEntity = createAsyncThunk(
   'roomImage/fetch_entity',
   async (id: string | number) => {
@@ -109,13 +118,22 @@ export const RoomImageSlice = createEntitySlice({
           }),
         };
       })
+      .addMatcher(isFulfilled(getEntitiesByRoom), (state, action) => {
+        const { data } = action.payload;
+
+        return {
+          ...state,
+          loading: false,
+          entities: data,
+        };
+      })
       .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {
         state.updating = false;
         state.loading = false;
         state.updateSuccess = true;
         state.entity = action.payload.data;
       })
-      .addMatcher(isPending(getEntities, getEntity), state => {
+      .addMatcher(isPending(getEntities, getEntitiesByRoom, getEntity), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.loading = true;

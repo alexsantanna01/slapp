@@ -5,7 +5,7 @@ import { TextFormat, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
 
-import { APP_DATE_FORMAT } from 'app/config/constants';
+import { APP_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './studio.reducer';
@@ -13,6 +13,7 @@ import { createEntity as createReservation, reset as resetReservation } from '..
 import { ReservationStatus } from 'app/shared/model/enumerations/reservation-status.model';
 import ReservationCalendar from './components/ReservationCalendar';
 import PendingReservations from './components/PendingReservations';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 export const StudioDetail = () => {
   const dispatch = useAppDispatch();
@@ -22,19 +23,13 @@ export const StudioDetail = () => {
   const accoutntEntity = useAppSelector(state => state.authentication.account);
   const reservationUpdateSuccess = useAppSelector(state => state.reservation.updateSuccess);
 
-  const [isOwner, setIsOwner] = useState(false);
+  const isOwner = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.STUDIO_OWNER]));
   const [reservationModalOpen, setReservationModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
 
   useEffect(() => {
     dispatch(getEntity(id));
   }, []);
-
-  useEffect(() => {
-    if (studioEntity && accoutntEntity !== undefined) {
-      setIsOwner(studioEntity?.owner?.id === accoutntEntity.id);
-    }
-  }, [studioEntity, accoutntEntity]);
 
   useEffect(() => {
     if (reservationUpdateSuccess) {
@@ -330,7 +325,7 @@ export const StudioDetail = () => {
             )}
 
             {/* Reservas Pendentes - Apenas para proprietários */}
-            {isOwner && <PendingReservations studioId={studioEntity.id} isOwner={isOwner} />}
+            {isOwner && <PendingReservations studioId={id} isOwner={isOwner} />}
           </Col>
         </Row>
       </div>

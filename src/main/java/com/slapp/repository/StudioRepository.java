@@ -567,4 +567,10 @@ public interface StudioRepository extends JpaRepository<Studio, Long>, JpaSpecif
         @Param("availabilityStartDateTime") Instant availabilityStartDateTime,
         @Param("availabilityEndDateTime") Instant availabilityEndDateTime
     );
+
+    /**
+     * Conta o total de salas ativas de um proprietário
+     */
+    @Query("SELECT COUNT(r) FROM Room r " + "JOIN r.studio s " + "WHERE s.owner.id = :ownerId AND s.active = true AND r.active = true")
+    Long countActiveRoomsByOwner(@Param("ownerId") Long ownerId);
 }

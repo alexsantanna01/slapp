@@ -27,6 +27,15 @@ export const getEntities = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const getEntitiesByStudio = createAsyncThunk(
+  'room/fetch_entities_by_studio',
+  async (studioId: string | number) => {
+    const requestUrl = `${apiUrl}?studioId.equals=${studioId}&cacheBuster=${new Date().getTime()}`;
+    return axios.get<IRoom[]>(requestUrl);
+  },
+  { serializeError: serializeAxiosError },
+);
+
 export const getEntity = createAsyncThunk(
   'room/fetch_entity',
   async (id: string | number) => {
@@ -93,7 +102,7 @@ export const RoomSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = {};
       })
-      .addMatcher(isFulfilled(getEntities), (state, action) => {
+      .addMatcher(isFulfilled(getEntities, getEntitiesByStudio), (state, action) => {
         const { data, headers } = action.payload;
 
         return {

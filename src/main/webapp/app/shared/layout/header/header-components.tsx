@@ -4,6 +4,8 @@ import { Translate } from 'react-jhipster';
 import { NavItem, NavLink, NavbarBrand } from 'reactstrap';
 import { NavLink as Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import SpeakerIcon from '@mui/icons-material/Speaker';
 
 export const BrandIcon = props => (
   <div {...props} className="brand-icon">
@@ -24,7 +26,7 @@ export const Brand = () => (
 export const Home = () => (
   <NavItem>
     <NavLink tag={Link} to="/studio" className="d-flex align-items-center">
-      <FontAwesomeIcon icon="music" />
+      <SpeakerIcon />
       <span>Estúdios</span>
     </NavLink>
   </NavItem>
@@ -32,7 +34,7 @@ export const Home = () => (
 export const Dashboard = () => (
   <NavItem>
     <NavLink tag={Link} to="/" className="d-flex align-items-center">
-      <FontAwesomeIcon icon="home" />
+      <EqualizerIcon />
       <span>Dashboard</span>
     </NavLink>
   </NavItem>

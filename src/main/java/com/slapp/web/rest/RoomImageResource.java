@@ -168,4 +168,16 @@ public class RoomImageResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    /**
+     * {@code GET /room-images} : get all the roomImages by roomId.
+     *
+     * @param roomId the id of the room to retrieve roomImages from.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of roomImages in body.
+     */
+    @GetMapping(params = "roomId.equals")
+    public List<RoomImageDTO> getEntitiesByRoomId(@RequestParam("roomId.equals") Long roomId) {
+        LOG.debug("REST request to get all RoomImages by RoomId : {}", roomId);
+        return roomImageService.findByRoomId(roomId);
+    }
 }

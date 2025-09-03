@@ -13,7 +13,7 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/system';
 import { Link } from 'react-router-dom';
-import { getEntities as getStudios, createEntity as createStudio } from 'app/entities/studio/studio.reducer';
+import { getEntities as getStudios, createEntity as createStudio, getOwnerStats, IOwnerStats } from 'app/entities/studio/studio.reducer';
 import CreateStudioWizard from 'app/modules/studio/create-studio-wizard';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -73,6 +73,8 @@ export const StudioOwnerHome = () => {
   const studios = useAppSelector(state => state.studio.entities);
   const userProfiles = useAppSelector(state => state.userProfile.entities);
   const loading = useAppSelector(state => state.studio.loading);
+  const ownerStats = useAppSelector(state => state.studio.ownerStats);
+  const ownerStatsLoading = useAppSelector(state => state.studio.ownerStatsLoading);
 
   const [userProfile, setUserProfile] = useState(null);
   const [ownedStudios, setOwnedStudios] = useState([]);
@@ -98,16 +100,31 @@ export const StudioOwnerHome = () => {
     }
   }, [userProfile, studios]);
 
+  useEffect(() => {
+    if (userProfile?.id && !ownerStats && !ownerStatsLoading) {
+      dispatch(getOwnerStats(userProfile.id));
+    }
+  }, [dispatch, userProfile, ownerStats, ownerStatsLoading]);
+
   const handleWizardComplete = () => {
     // Refresh the studios list after wizard completion
     dispatch(getStudios({}));
   };
 
-  const mockStats = {
+  // Função para formatar valor monetário em BRL
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  };
+
+  // Estatísticas reais ou valores padrão
+  const stats = {
     totalStudios: ownedStudios.length,
-    totalReservations: Math.floor(Math.random() * 100) + 50,
-    monthlyRevenue: (Math.random() * 5000 + 2000).toFixed(2),
-    occupancyRate: Math.floor(Math.random() * 40) + 60,
+    totalReservations: ownerStats?.totalReservations || 0,
+    monthlyRevenue: ownerStats?.monthlyRevenue || 0,
+    occupancyRate: ownerStats?.occupancyRate || 0,
   };
 
   return (
@@ -147,7 +164,7 @@ export const StudioOwnerHome = () => {
                 <MusicNoteIcon fontSize="large" />
               </Avatar>
               <Typography variant="h4" fontWeight="bold" color="var(--wood-brown)">
-                {mockStats.totalStudios}
+                {stats.totalStudios}
               </Typography>
               <Typography variant="body2" color="var(--wood-light)">
                 Estúdios Ativos
@@ -170,7 +187,7 @@ export const StudioOwnerHome = () => {
                 <EventIcon fontSize="large" />
               </Avatar>
               <Typography variant="h4" fontWeight="bold" color="var(--wood-brown)">
-                {mockStats.totalReservations}
+                {ownerStatsLoading ? '...' : stats.totalReservations}
               </Typography>
               <Typography variant="body2" color="var(--wood-light)">
                 Reservas Este Mês
@@ -193,7 +210,7 @@ export const StudioOwnerHome = () => {
                 <MoneyIcon fontSize="large" />
               </Avatar>
               <Typography variant="h4" fontWeight="bold" color="var(--wood-brown)">
-                R$ {mockStats.monthlyRevenue}
+                {ownerStatsLoading ? '...' : formatCurrency(stats.monthlyRevenue)}
               </Typography>
               <Typography variant="body2" color="var(--wood-light)">
                 Receita Mensal
@@ -216,7 +233,7 @@ export const StudioOwnerHome = () => {
                 <DashboardIcon fontSize="large" />
               </Avatar>
               <Typography variant="h4" fontWeight="bold" color="var(--wood-brown)">
-                {mockStats.occupancyRate}%
+                {ownerStatsLoading ? '...' : `${stats.occupancyRate.toFixed(2)}%`}
               </Typography>
               <Typography variant="body2" color="var(--wood-light)">
                 Taxa de Ocupação
