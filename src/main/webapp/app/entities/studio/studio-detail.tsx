@@ -23,7 +23,8 @@ export const StudioDetail = () => {
   const accoutntEntity = useAppSelector(state => state.authentication.account);
   const reservationUpdateSuccess = useAppSelector(state => state.reservation.updateSuccess);
 
-  const isOwner = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.STUDIO_OWNER]));
+  const isStudioOwner = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.STUDIO_OWNER]));
+  const isOwnerOfThisStudio = accoutntEntity && studioEntity?.owner?.user?.id === accoutntEntity.id;
   const [reservationModalOpen, setReservationModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
 
@@ -285,7 +286,7 @@ export const StudioDetail = () => {
                             </div>
 
                             {/* Botão de Reserva */}
-                            {room.active && !isOwner && accoutntEntity && (
+                            {room.active && !isOwnerOfThisStudio && accoutntEntity && (
                               <div className="mt-auto">
                                 <Button
                                   color="primary"
@@ -311,7 +312,7 @@ export const StudioDetail = () => {
                         <Translate contentKey="entity.action.back">Voltar</Translate>
                       </span>
                     </Button>
-                    {isOwner && (
+                    {isOwnerOfThisStudio && (
                       <Button tag={Link} to={`/studio/${studioEntity.id}/edit`} replace className="button-slapp-editar">
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
@@ -324,8 +325,8 @@ export const StudioDetail = () => {
               </Card>
             )}
 
-            {/* Reservas Pendentes - Apenas para proprietários */}
-            {isOwner && <PendingReservations studioId={id} isOwner={isOwner} />}
+            {/* Reservas Pendentes - Apenas para proprietários do estúdio */}
+            {isOwnerOfThisStudio && <PendingReservations studioId={id} isOwner={isOwnerOfThisStudio} />}
           </Col>
         </Row>
       </div>
