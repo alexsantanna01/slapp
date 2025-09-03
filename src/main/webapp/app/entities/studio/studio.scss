@@ -34,14 +34,13 @@
 }
 
 .button-slapp-straped {
-  border-color: var(--wood-brown);
-  color: var(--wood-brown);
-  background-color: transparent;
+  border-color: var(--wood-brown) !important;
+  color: var(--text-button-primary) !important;
   border-radius: 5px;
   transition: background-color 0.3s ease;
 
   &:hover {
-    background: var(--wood-light);
+    background-color: var(--gold-primary) !important;
   }
 }
 
@@ -74,32 +73,32 @@
 }
 
 .button-slapp-editar {
-  background-color: var(--gold-primary);
-  border-color: var(--gold-primary);
+  background-color: var(--gold-primary) !important;
+  color: var(--text-button-primary) !important;
+  border-color: var(--gold-primary) !important;
   padding: 0.75rem 2rem;
-  color: white;
   border-radius: 5px;
   transition: background-color 0.3s ease;
   width: 10em;
 
   &:hover {
-    background-color: var(--gold-dark);
-    border-color: var(--gold-dark);
+    background-color: var(--gold-dark) !important;
+    border-color: var(--gold-dark) !important;
   }
 }
 
 .button-slapp-voltar {
   width: 10em;
-  background-color: var(--wood-brown);
-  border-color: var(--wood-brown);
+  background-color: var(--gold-dark) !important;
+  border-color: var(--gold-dark) !important;
   padding: 0.75rem 2rem;
-  color: white;
+  color: var(--text-button-secundary) !important;
   border-radius: 5px;
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: var(--wood-light);
-    border-color: var(--wood-light);
+    background-color: var(--gold-primary) !important;
+    border-color: var(--gold-primary) !important;
   }
 }
 
@@ -180,4 +179,15 @@
       }
     }
   }
+}
+
+.banner-detail {
+  background-size: cover;
+  background-position: 'center';
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
 }

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, Card, CardBody, Badge, Alert } from 'reactstrap';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Col, Row, Card, CardBody, Badge, Button as ButtonBooststrap } from 'reactstrap';
 import { TextFormat, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
 
 import { APP_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { useCurrentUserProfile } from 'app/shared/util/user-profile-util';
 
 import { getEntity } from './studio.reducer';
 import { createEntity as createReservation, reset as resetReservation } from '../reservation/reservation.reducer';
@@ -14,17 +15,37 @@ import { ReservationStatus } from 'app/shared/model/enumerations/reservation-sta
 import ReservationCalendar from './components/ReservationCalendar';
 import PendingReservations from './components/PendingReservations';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import styled from '@emotion/styled';
+import { Button } from '@mui/material';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EditIcon from '@mui/icons-material/Edit';
+
+const ReservationButton = styled(Button)(({ theme }) => ({
+  backgroundColor: 'var(--gold-primary) !important',
+  color: 'var(--text-button-primary) !important',
+  borderRadius: '8px',
+  border: 'none',
+  padding: '0.5rem 1rem',
+  fontWeight: 600,
+  '&:hover': {
+    backgroundColor: 'var(--gold-dark) !important',
+    transform: 'translateY(-1px)',
+  },
+}));
 
 export const StudioDetail = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { id } = useParams<'id'>();
 
   const studioEntity = useAppSelector(state => state.studio.entity);
   const accoutntEntity = useAppSelector(state => state.authentication.account);
   const reservationUpdateSuccess = useAppSelector(state => state.reservation.updateSuccess);
+  const { userProfile } = useCurrentUserProfile();
 
   const isStudioOwner = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.STUDIO_OWNER]));
-  const isOwnerOfThisStudio = accoutntEntity && studioEntity?.owner?.user?.id === accoutntEntity.id;
+  const isOwnerOfThisStudio = userProfile && studioEntity?.owner?.id === userProfile.id;
   const [reservationModalOpen, setReservationModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
 
@@ -81,21 +102,21 @@ export const StudioDetail = () => {
     return <div>Loading...</div>;
   }
 
+  function handleGoBack(): void {
+    navigate(-1);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  function handleEdit(id: any): void {
+    navigate(`/studio/${id}/edit`);
+  }
+
   return (
     <div style={{ backgroundColor: 'var(--off-beige)', minHeight: '100vh' }}>
       {/* Banner do Studio */}
       <div
-        style={{
-          backgroundImage: `linear-gradient(rgba(77, 52, 36, 0.6), rgba(77, 52, 36, 0.6)), url(${studioEntity.image})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '400px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          textAlign: 'center',
-        }}
+        className="banner-detail"
+        style={{ backgroundImage: `linear-gradient(rgba(77, 52, 36, 0.6), rgba(77, 52, 36, 0.6)), url(${studioEntity.image})` }}
       >
         <div>
           <h1 style={{ fontSize: '3.5rem', fontWeight: 'bold', marginBottom: '1rem', textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
@@ -288,15 +309,9 @@ export const StudioDetail = () => {
                             {/* Botão de Reserva */}
                             {room.active && !isOwnerOfThisStudio && accoutntEntity && (
                               <div className="mt-auto">
-                                <Button
-                                  color="primary"
-                                  size="sm"
-                                  block
-                                  onClick={() => handleReserveRoom(room)}
-                                  className="button-slapp-primary"
-                                >
-                                  <FontAwesomeIcon icon="calendar-plus" /> Reservar
-                                </Button>
+                                <ReservationButton onClick={() => handleReserveRoom(room)} startIcon={<CalendarMonthIcon />}>
+                                  Reservar
+                                </ReservationButton>
                               </div>
                             )}
                           </CardBody>
@@ -306,15 +321,18 @@ export const StudioDetail = () => {
                   </Row>
                   {/* Botões de Ação */}
                   <Row className="d-flex justify-content-between" style={{ marginTop: '1rem' }}>
-                    <Button tag={Link} to="/studio" replace className="button-slapp-voltar">
-                      <FontAwesomeIcon icon="arrow-left" />{' '}
+                    <Button variant="contained" onClick={handleGoBack} startIcon={<ArrowBackIcon />} className="button-slapp-voltar">
                       <span className="d-none d-md-inline">
                         <Translate contentKey="entity.action.back">Voltar</Translate>
                       </span>
                     </Button>
                     {isOwnerOfThisStudio && (
-                      <Button tag={Link} to={`/studio/${studioEntity.id}/edit`} replace className="button-slapp-editar">
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
+                      <Button
+                        variant="contained"
+                        onClick={e => handleEdit(studioEntity.id)}
+                        startIcon={<EditIcon />}
+                        className="button-slapp-editar"
+                      >
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.edit">Editar</Translate>
                         </span>
