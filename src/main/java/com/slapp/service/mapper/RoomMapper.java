@@ -14,8 +14,16 @@ public interface RoomMapper extends EntityMapper<RoomDTO, Room> {
     @Mapping(target = "studio", source = "studio", qualifiedByName = "studioId")
     RoomDTO toDto(Room s);
 
+    @Mapping(target = "studio", source = "studio", qualifiedByName = "studioFromId")
+    Room toEntity(RoomDTO roomDTO);
+
     @Named("studioId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     StudioDTO toDtoStudioId(Studio studio);
+
+    @Named("studioFromId")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    Studio toEntityStudioFromId(StudioDTO studioDTO);
 }

@@ -23,11 +23,17 @@ export const Brand = () => (
 
 export const Home = () => (
   <NavItem>
+    <NavLink tag={Link} to="/studio" className="d-flex align-items-center">
+      <FontAwesomeIcon icon="music" />
+      <span>Estúdios</span>
+    </NavLink>
+  </NavItem>
+);
+export const Dashboard = () => (
+  <NavItem>
     <NavLink tag={Link} to="/" className="d-flex align-items-center">
       <FontAwesomeIcon icon="home" />
-      <span>
-        <Translate contentKey="global.menu.home">Home</Translate>
-      </span>
+      <span>Dashboard</span>
     </NavLink>
   </NavItem>
 );
